@@ -1,1 +1,1 @@
-# neptune-prophet
+# Neptune FB Prophet integration
