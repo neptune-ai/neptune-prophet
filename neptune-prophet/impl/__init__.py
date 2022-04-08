@@ -88,6 +88,7 @@ def log_forecast_plots(model, forecast, df:pd.DataFrame=None, log_interactive=Tr
         return forecast_plots
 
 def log_cross_validation_results(df_cv, all_params, metrics: list, metric_name='rmse', log_interactive=True):
+
     cv_results = dict()
     fig = plot_cross_validation_metric(df_cv, metric_name)
 
@@ -187,6 +188,7 @@ def get_residuals(forecast, y):
     return forecast
 
 def detect_anomalies(forecast, y):
+
     forecast['anomaly'] = 0
 
     forecast.loc[y > forecast['yhat_upper'], 'anomaly'] = 1
@@ -202,6 +204,7 @@ def detect_anomalies(forecast, y):
     return forecast
 
 def log_serialized_model(model, fname = 'serialized_model.json'):
+
     with open(fname, 'w') as fout:
         json.dump(model_to_json(model), fout)
     return File(fname)
@@ -216,6 +219,7 @@ def create_summary(
         log_charts=True,
         log_interactive=True, alpha=0.7
     ):
+
     prophet_summary = dict()
 
     prophet_summary['model'] = {
