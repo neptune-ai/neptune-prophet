@@ -34,7 +34,7 @@ except ImportError:
     from neptune.internal.utils import verify_type
     from neptune.internal.utils.compatibility import expect_not_an_experiment
 
-from neptune_integration_template import __version__  # TODO: change module name
+from neptune_prophet import __version__  # TODO: change module name
 
 INTEGRATION_VERSION_KEY = 'source_code/integrations/integration-template'  # TODO: change path
 
