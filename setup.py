@@ -29,7 +29,7 @@ def main():
         version = versioneer.get_version()
 
     setup(
-        name='neptune-integration-template',  # TODO: update package name to `neptune-*`
+        name='neptune-prophet',  # TODO: update package name to `neptune-*`
         version=version,
         description='Neptune.ai integration template integration library',  # TODO: update integration name
         author='neptune.ai',
