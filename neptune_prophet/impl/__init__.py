@@ -20,6 +20,7 @@ __all__ = [
 ]
 
 # TODO: use `warnings.warn` for user caused problems: https://stackoverflow.com/a/14762106/1565454
+import tempfile
 import warnings
 
 try:
@@ -203,11 +204,11 @@ def detect_anomalies(forecast, y):
 
     return forecast
 
-def log_serialized_model(model, fname = 'serialized_model.json'):
-
-    with open(fname, 'w') as fout:
-        json.dump(model_to_json(model), fout)
-    return File(fname)
+def get_serialized_model(model):
+    # create a temporary file and return File field with serialized model
+    tmp = tempfile.TemporaryFile()
+    tmp.write(json.dump(model_to_json(model)))
+    return File(tmp)
 
 def log_dataframe(df, nrows=1000):
     return File.as_html(df.head(n=nrows))
