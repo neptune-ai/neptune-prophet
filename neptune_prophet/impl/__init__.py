@@ -99,6 +99,8 @@ def get_cross_validation_results( all_params, metrics: list, metric_name="rmse")
     best_params = all_params[np.argmin(metrics)]
     cv_results["best_params"] = best_params
 
+    return cv_results
+
 
 def get_figure(figsize=(20, 10)):
     fig, ax = plt.subplots(1, figsize=figsize)
