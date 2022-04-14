@@ -55,7 +55,7 @@ from fbprophet.serialize import model_to_json
 import json
 
 
-def log_forecast_plots(model, forecast, df:pd.DataFrame=None, log_interactive=True):
+def create_forecast_plots(model, forecast, df:pd.DataFrame=None, log_interactive=True):
     forecast_plots = dict()
 
     yhat_values = forecast.yhat.tolist()
@@ -88,7 +88,7 @@ def log_forecast_plots(model, forecast, df:pd.DataFrame=None, log_interactive=Tr
             forecast_plots["forecast_changepoints"] = File.as_image(changepoint_fig[-1].figure)
         return forecast_plots
 
-def log_cross_validation_results( all_params, metrics: list, metric_name="rmse"):
+def get_cross_validation_results( all_params, metrics: list, metric_name="rmse"):
 
     cv_results = dict()
 
@@ -104,7 +104,7 @@ def get_figure(figsize=(20, 10)):
     fig, ax = plt.subplots(1, figsize=figsize)
     return fig, ax
 
-def log_residual_diagnostics_plot(residuals_forecast, y:pd.Series, alpha=0.7, log_interactive=True):
+def create_residual_diagnostics_plot(residuals_forecast, y:pd.Series, alpha=0.7, log_interactive=True):
     if "e_z" not in residuals_forecast.columns:
         residuals_forecast = get_residuals(residuals_forecast, y)
     if "anomaly" not in residuals_forecast.columns:
@@ -153,7 +153,7 @@ def log_residual_diagnostics_plot(residuals_forecast, y:pd.Series, alpha=0.7, lo
 
     return plots
 
-def log_model_config(model: Prophet):
+def get_model_config(model: Prophet):
     model_config = dict()
     module = "numpy"
     if module not in sys.modules:
@@ -197,13 +197,13 @@ def detect_anomalies(forecast, y):
 
     return forecast
 
-def get_serialized_model(model):
+def create_serialized_model(model):
     # create a temporary file and return File field with serialized model
     tmp = tempfile.TemporaryFile()
     tmp.write(json.dump(model_to_json(model)))
     return File(tmp)
 
-def log_dataframe(df, nrows=1000):
+def get_dataframe(df, nrows=1000):
     return File.as_html(df.head(n=nrows))
 
 def create_summary(
@@ -217,11 +217,11 @@ def create_summary(
     prophet_summary = dict()
 
     prophet_summary["model"] = {
-        "model_config":log_model_config(model),
-        "serialized_model":get_serialized_model(model)
+        "model_config": get_model_config(model),
+        "serialized_model": create_serialized_model(model)
     }
 
-    prophet_summary["dataframes"] = {"forecast": log_dataframe(forecast)}
+    prophet_summary["dataframes"] = {"forecast": get_dataframe(forecast)}
 
     if cv_metrics_df is not None:
         prophet_summary["metrics"] = cv_metrics_df.to_dict(orient="records")[0]
@@ -240,13 +240,13 @@ def create_summary(
 
         if log_charts:
             prophet_summary["diagnostics_charts"] =  {
-                "residuals_diagnostics_charts":  log_residual_diagnostics_plot(residuals_forecast, df.y, alpha, log_interactive=log_interactive),
-                **log_forecast_plots(model, forecast, df, log_interactive=log_interactive)
+                "residuals_diagnostics_charts":  create_residual_diagnostics_plot(residuals_forecast, df.y, alpha, log_interactive=log_interactive),
+                **create_forecast_plots(model, forecast, df, log_interactive=log_interactive)
             }
     else:
         if log_charts:
             prophet_summary["diagnostics_charts"] =  {
-                **log_forecast_plots(model, forecast, log_interactive=log_interactive)
+                **create_forecast_plots(model, forecast, log_interactive=log_interactive)
             }
 
     plt.close("all")
