@@ -121,7 +121,7 @@ def create_residual_diagnostics_plot(
     residuals_forecast, y: pd.Series, alpha=0.7, log_interactive=True
 ):
     if "e_z" not in residuals_forecast.columns:
-        residuals_forecast = get_residuals(residuals_forecast, y)
+        residuals_forecast = _get_residuals(residuals_forecast, y)
     if "anomaly" not in residuals_forecast.columns:
         residuals_forecast = _detect_anomalies(residuals_forecast, y)
 
@@ -201,7 +201,7 @@ def get_model_config(model: Prophet):
     return model_config
 
 
-def get_residuals(forecast, y):
+def _get_residuals(forecast, y):
     forecast["e"] = y - forecast.yhat
     forecast["e_z"] = stats.zscore(
         forecast["e"], nan_policy="omit"
@@ -266,7 +266,7 @@ def create_summary(
         if len(forecast) > len(df.y):
             forecast = forecast.truncate(after=len(df.y) - 1)
 
-        residuals_forecast = get_residuals(forecast, y=df.y)
+        residuals_forecast = _get_residuals(forecast, y=df.y)
         residuals_forecast = _detect_anomalies(residuals_forecast, y=df.y)
         residuals_forecast["y"] = df.y
         prophet_summary["dataframes"]["residuals_forecast"] = File.as_html(
