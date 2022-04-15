@@ -37,7 +37,9 @@ except ImportError:
 
 from neptune_prophet import __version__  # TODO: change module name
 
-INTEGRATION_VERSION_KEY = "source_code/integrations/integration-template"  # TODO: change path
+INTEGRATION_VERSION_KEY = (
+    "source_code/integrations/integration-template"  # TODO: change path
+)
 
 # TODO: Implementation of neptune-integration here
 
@@ -55,7 +57,10 @@ from fbprophet.serialize import model_to_json
 import json
 import tempfile
 
-def create_forecast_plots(model, forecast, df:pd.DataFrame=None, log_interactive=True):
+
+def create_forecast_plots(
+    model, forecast, df: pd.DataFrame = None, log_interactive=True
+):
     forecast_plots = dict()
 
     yhat_values = forecast.yhat.tolist()
@@ -72,11 +77,13 @@ def create_forecast_plots(model, forecast, df:pd.DataFrame=None, log_interactive
         fig1 = plot_plotly(model, forecast)
         forecast_plots["forecast"] = File.as_html(fig1)
         if "trend" in forecast.columns:
-            fig2 = plot_components_plotly(model, forecast, figsize=(1000,400))
+            fig2 = plot_components_plotly(model, forecast, figsize=(1000, 400))
             forecast_plots["forecast_components"] = File.as_html(fig2)
             fig3 = model.plot(forecast)
             changepoint_fig = add_changepoints_to_plot(fig3.gca(), model, forecast)
-            forecast_plots["forecast_changepoints"] = File.as_image(changepoint_fig[-1].figure)
+            forecast_plots["forecast_changepoints"] = File.as_image(
+                changepoint_fig[-1].figure
+            )
         return forecast_plots
     else:
         fig1 = model.plot(forecast)
@@ -85,10 +92,13 @@ def create_forecast_plots(model, forecast, df:pd.DataFrame=None, log_interactive
             fig2 = model.plot_components(forecast)
             forecast_plots["forecast_components"] = File.as_image(fig2)
             changepoint_fig = add_changepoints_to_plot(fig1.gca(), model, forecast)
-            forecast_plots["forecast_changepoints"] = File.as_image(changepoint_fig[-1].figure)
+            forecast_plots["forecast_changepoints"] = File.as_image(
+                changepoint_fig[-1].figure
+            )
         return forecast_plots
 
-def get_cross_validation_results( all_params, metrics: list, metric_name="rmse"):
+
+def get_cross_validation_results(all_params, metrics: list, metric_name="rmse"):
 
     cv_results = dict()
 
@@ -106,18 +116,25 @@ def get_figure(figsize=(20, 10)):
     fig, ax = plt.subplots(1, figsize=figsize)
     return fig, ax
 
-def create_residual_diagnostics_plot(residuals_forecast, y:pd.Series, alpha=0.7, log_interactive=True):
+
+def create_residual_diagnostics_plot(
+    residuals_forecast, y: pd.Series, alpha=0.7, log_interactive=True
+):
     if "e_z" not in residuals_forecast.columns:
         residuals_forecast = get_residuals(residuals_forecast, y)
     if "anomaly" not in residuals_forecast.columns:
         residuals_forecast = detect_anomalies(residuals_forecast, y)
 
     colors = {0: "#0079b9", 1: "red", -1: "red"}
-    c = residuals_forecast.anomaly.map(colors) if "anomaly" in residuals_forecast else None
+    c = (
+        residuals_forecast.anomaly.map(colors)
+        if "anomaly" in residuals_forecast
+        else None
+    )
     plots = dict()
 
     fig1, ax1 = get_figure()
-    sm.qqplot(residuals_forecast["e_z"], line="45" ,ax=ax1)
+    sm.qqplot(residuals_forecast["e_z"], line="45", ax=ax1)
     ax1.set_title("QQ Plot of normalized errors")
 
     fig2, ax2 = get_figure()
@@ -132,8 +149,12 @@ def create_residual_diagnostics_plot(residuals_forecast, y:pd.Series, alpha=0.7,
     ax3.set_xlabel("y")
 
     fig4, ax4 = get_figure()
-    sm.graphics.tsa.plot_acf(residuals_forecast.set_index("ds")["e_z"], auto_ylims=True, ax=ax4,
-                             title="ACF of normalized errors")
+    sm.graphics.tsa.plot_acf(
+        residuals_forecast.set_index("ds")["e_z"],
+        auto_ylims=True,
+        ax=ax4,
+        title="ACF of normalized errors",
+    )
 
     fig5, ax5 = get_figure()
     ax5.scatter(residuals_forecast["ds"], residuals_forecast["e_z"], c=c, alpha=alpha)
@@ -141,19 +162,20 @@ def create_residual_diagnostics_plot(residuals_forecast, y:pd.Series, alpha=0.7,
     ax5.set_xlabel("Dates")
     ax5.set_title("DS vs Normalized errors")
 
-    plots["Histogram"] =  File.as_image(fig2)
-    plots["ACF"] =  File.as_image(fig4)
+    plots["Histogram"] = File.as_image(fig2)
+    plots["ACF"] = File.as_image(fig4)
 
     if log_interactive:
         plots["QQ_plot"] = File.as_html(fig1)
-        plots["Actual_vs_Normalized_errors"] =  File.as_html(fig3)
+        plots["Actual_vs_Normalized_errors"] = File.as_html(fig3)
         plots["DS_vs_Normalized_errors"] = File.as_html(fig5)
     else:
-        plots["QQ_plot"] =  File.as_image(fig1)
-        plots["Actual_vs_Normalized_errors"] =  File.as_image(fig3)
+        plots["QQ_plot"] = File.as_image(fig1)
+        plots["Actual_vs_Normalized_errors"] = File.as_image(fig3)
         plots["DS_vs_Normalized_errors"] = File.as_image(fig5)
 
     return plots
+
 
 def get_model_config(model: Prophet):
     model_config = dict()
@@ -178,10 +200,14 @@ def get_model_config(model: Prophet):
 
     return model_config
 
+
 def get_residuals(forecast, y):
     forecast["e"] = y - forecast.yhat
-    forecast["e_z"] = stats.zscore(forecast["e"], nan_policy="omit") # Normalization mean=0, std=1
+    forecast["e_z"] = stats.zscore(
+        forecast["e"], nan_policy="omit"
+    )  # Normalization mean=0, std=1
     return forecast
+
 
 def detect_anomalies(forecast, y):
 
@@ -192,35 +218,42 @@ def detect_anomalies(forecast, y):
 
     # Anomaly importances
     forecast["importance"] = 0
-    forecast.loc[forecast["anomaly"] ==1, "importance"] = \
-        (y - forecast["yhat_upper"])/y
-    forecast.loc[forecast["anomaly"] ==-1, "importance"] = \
-        (forecast["yhat_lower"] - y)/y
+    forecast.loc[forecast["anomaly"] == 1, "importance"] = (
+        y - forecast["yhat_upper"]
+    ) / y
+    forecast.loc[forecast["anomaly"] == -1, "importance"] = (
+        forecast["yhat_lower"] - y
+    ) / y
 
     return forecast
 
+
 def create_serialized_model(model):
     # create a temporary file and return File field with serialized model
-    tmp = tempfile.NamedTemporaryFile('w', delete=False)
+    tmp = tempfile.NamedTemporaryFile("w", delete=False)
     json.dump(model_to_json(model), tmp)
     return File(tmp.name)
+
 
 def get_dataframe(df, nrows=1000):
     return File.as_html(df.head(n=nrows))
 
+
 def create_summary(
-        model, forecast:pd.DataFrame,
-        df:pd.DataFrame = None,
-        cv_metrics_df:pd.DataFrame=None,
-        log_charts=True,
-        log_interactive=True, alpha=0.7
-    ):
+    model,
+    forecast: pd.DataFrame,
+    df: pd.DataFrame = None,
+    cv_metrics_df: pd.DataFrame = None,
+    log_charts=True,
+    log_interactive=True,
+    alpha=0.7,
+):
 
     prophet_summary = dict()
 
     prophet_summary["model"] = {
         "model_config": get_model_config(model),
-        "serialized_model": create_serialized_model(model)
+        "serialized_model": create_serialized_model(model),
     }
 
     prophet_summary["dataframes"] = {"forecast": get_dataframe(forecast)}
@@ -231,24 +264,30 @@ def create_summary(
     if df is not None:
         prophet_summary[f"dataframes"]["df"] = File.as_html(df)
         if len(forecast) > len(df.y):
-            forecast = forecast.truncate(after = len(df.y) - 1)
+            forecast = forecast.truncate(after=len(df.y) - 1)
 
         residuals_forecast = get_residuals(forecast, y=df.y)
         residuals_forecast = detect_anomalies(residuals_forecast, y=df.y)
         residuals_forecast["y"] = df.y
         prophet_summary["dataframes"]["residuals_forecast"] = File.as_html(
-            residuals_forecast[["y","e","e_z","anomaly","importance"]]
+            residuals_forecast[["y", "e", "e_z", "anomaly", "importance"]]
         )
 
         if log_charts:
-            prophet_summary["diagnostics_charts"] =  {
-                "residuals_diagnostics_charts":  create_residual_diagnostics_plot(residuals_forecast, df.y, alpha, log_interactive=log_interactive),
-                **create_forecast_plots(model, forecast, df, log_interactive=log_interactive)
+            prophet_summary["diagnostics_charts"] = {
+                "residuals_diagnostics_charts": create_residual_diagnostics_plot(
+                    residuals_forecast, df.y, alpha, log_interactive=log_interactive
+                ),
+                **create_forecast_plots(
+                    model, forecast, df, log_interactive=log_interactive
+                ),
             }
     else:
         if log_charts:
-            prophet_summary["diagnostics_charts"] =  {
-                **create_forecast_plots(model, forecast, log_interactive=log_interactive)
+            prophet_summary["diagnostics_charts"] = {
+                **create_forecast_plots(
+                    model, forecast, log_interactive=log_interactive
+                )
             }
 
     plt.close("all")
