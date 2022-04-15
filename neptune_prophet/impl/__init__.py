@@ -123,7 +123,7 @@ def create_residual_diagnostics_plot(
     if "e_z" not in residuals_forecast.columns:
         residuals_forecast = get_residuals(residuals_forecast, y)
     if "anomaly" not in residuals_forecast.columns:
-        residuals_forecast = detect_anomalies(residuals_forecast, y)
+        residuals_forecast = _detect_anomalies(residuals_forecast, y)
 
     colors = {0: "#0079b9", 1: "red", -1: "red"}
     c = (
@@ -209,7 +209,7 @@ def get_residuals(forecast, y):
     return forecast
 
 
-def detect_anomalies(forecast, y):
+def _detect_anomalies(forecast, y):
 
     forecast["anomaly"] = 0
 
@@ -267,7 +267,7 @@ def create_summary(
             forecast = forecast.truncate(after=len(df.y) - 1)
 
         residuals_forecast = get_residuals(forecast, y=df.y)
-        residuals_forecast = detect_anomalies(residuals_forecast, y=df.y)
+        residuals_forecast = _detect_anomalies(residuals_forecast, y=df.y)
         residuals_forecast["y"] = df.y
         prophet_summary["dataframes"]["residuals_forecast"] = File.as_html(
             residuals_forecast[["y", "e", "e_z", "anomaly", "importance"]]
