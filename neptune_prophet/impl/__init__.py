@@ -112,7 +112,7 @@ def get_cross_validation_results(all_params, metrics: list, metric_name="rmse"):
     return cv_results
 
 
-def get_figure(figsize=(20, 10)):
+def _get_figure(figsize=(20, 10)):
     fig, ax = plt.subplots(1, figsize=figsize)
     return fig, ax
 
@@ -133,22 +133,22 @@ def create_residual_diagnostics_plot(
     )
     plots = dict()
 
-    fig1, ax1 = get_figure()
+    fig1, ax1 = _get_figure()
     sm.qqplot(residuals_forecast["e_z"], line="45", ax=ax1)
     ax1.set_title("QQ Plot of normalized errors")
 
-    fig2, ax2 = get_figure()
+    fig2, ax2 = _get_figure()
     ax2.hist(residuals_forecast["e_z"], bins="auto")
     ax2.set_xlabel("Normalized e = y - yhat")
     ax2.set_title("Histogram of normalized errors")
 
-    fig3, ax3 = get_figure()
+    fig3, ax3 = _get_figure()
     ax3.scatter(y, residuals_forecast["e_z"], c=c, alpha=alpha)
     ax3.set_title("Actual vs Normalized errors")
     ax3.set_ylabel("Normalized e = y - yhat")
     ax3.set_xlabel("y")
 
-    fig4, ax4 = get_figure()
+    fig4, ax4 = _get_figure()
     sm.graphics.tsa.plot_acf(
         residuals_forecast.set_index("ds")["e_z"],
         auto_ylims=True,
@@ -156,7 +156,7 @@ def create_residual_diagnostics_plot(
         title="ACF of normalized errors",
     )
 
-    fig5, ax5 = get_figure()
+    fig5, ax5 = _get_figure()
     ax5.scatter(residuals_forecast["ds"], residuals_forecast["e_z"], c=c, alpha=alpha)
     ax5.set_ylabel("Normalized e = y - yhat")
     ax5.set_xlabel("Dates")
