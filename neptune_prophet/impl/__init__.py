@@ -201,9 +201,9 @@ def detect_anomalies(forecast, y):
 
 def create_serialized_model(model):
     # create a temporary file and return File field with serialized model
-    tmp = tempfile.TemporaryFile()
-    tmp.write(json.dump(model_to_json(model)))
-    return File(tmp)
+    tmp = tempfile.NamedTemporaryFile('w', delete=False)
+    json.dump(model_to_json(model), tmp)
+    return File(tmp.name)
 
 def get_dataframe(df, nrows=1000):
     return File.as_html(df.head(n=nrows))
