@@ -50,10 +50,10 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from scipy import stats
 from fbprophet.plot import plot_plotly, plot_components_plotly
-from fbprophet.plot import plot_cross_validation_metric, add_changepoints_to_plot
+from fbprophet.plot import add_changepoints_to_plot
 from fbprophet.serialize import model_to_json
 import json
-
+import tempfile
 
 def create_forecast_plots(model, forecast, df:pd.DataFrame=None, log_interactive=True):
     forecast_plots = dict()
