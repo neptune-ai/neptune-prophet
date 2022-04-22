@@ -58,8 +58,82 @@ import json
 import tempfile
 
 
+def get_cross_validation_results(all_params, metrics: list, metric_name="rmse"):
+
+    cv_results = dict()
+
+    tuning_results = pd.DataFrame(all_params)
+    tuning_results[metric_name] = metrics
+    cv_results["tuning_results"] = tuning_results.to_dict()
+
+    best_params = all_params[np.argmin(metrics)]
+    cv_results["best_params"] = best_params
+
+    return cv_results
+
+
+def _get_figure(figsize=(20, 10)):
+    fig, ax = plt.subplots(1, figsize=figsize)
+    return fig, ax
+
+
+def get_model_config(model: Prophet):
+    model_config = dict()
+    module = "numpy"
+    if module not in sys.modules:
+        raise Exception(f"{module} is not imported")
+
+    config = copy.deepcopy(model.__dict__)
+    model.history_dates = pd.DataFrame(model.history_dates)
+
+    config["params"].pop("trend")
+
+    for key, value in config.items():
+        if isinstance(value, pd.DataFrame):
+            model_config[f"{key}"] = File.as_html(value)
+        elif isinstance(value, np.ndarray):
+            model_config[f"{key}"] = File.as_html(pd.DataFrame(value))
+        elif isinstance(value, pd.Series):
+            model_config[f"{key}"] = File.as_html(pd.DataFrame(value))
+        else:
+            model_config[f"{key}"] = value
+
+    return model_config
+
+
+def _get_residuals(forecast, y):
+    forecast["e"] = y - forecast.yhat
+    forecast["e_z"] = stats.zscore(
+        forecast["e"], nan_policy="omit"
+    )  # Normalization mean=0, std=1
+    return forecast
+
+
+def _get_dataframe(df, nrows=1000):
+    return File.as_html(df.head(n=nrows))
+
+
+def _detect_anomalies(forecast, y):
+
+    forecast["anomaly"] = 0
+
+    forecast.loc[y > forecast["yhat_upper"], "anomaly"] = 1
+    forecast.loc[y < forecast["yhat_lower"], "anomaly"] = -1
+
+    # Anomaly importances
+    forecast["importance"] = 0
+    forecast.loc[forecast["anomaly"] == 1, "importance"] = (
+        y - forecast["yhat_upper"]
+    ) / y
+    forecast.loc[forecast["anomaly"] == -1, "importance"] = (
+        forecast["yhat_lower"] - y
+    ) / y
+
+    return forecast
+
+
 def create_forecast_plots(
-    model:Prophet, forecast, df: pd.DataFrame = None, log_interactive=True
+    model: Prophet, forecast, df: pd.DataFrame = None, log_interactive=True
 ):
     forecast_plots = dict()
 
@@ -96,25 +170,6 @@ def create_forecast_plots(
                 changepoint_fig[-1].figure
             )
         return forecast_plots
-
-
-def get_cross_validation_results(all_params, metrics: list, metric_name="rmse"):
-
-    cv_results = dict()
-
-    tuning_results = pd.DataFrame(all_params)
-    tuning_results[metric_name] = metrics
-    cv_results["tuning_results"] = tuning_results.to_dict()
-
-    best_params = all_params[np.argmin(metrics)]
-    cv_results["best_params"] = best_params
-
-    return cv_results
-
-
-def _get_figure(figsize=(20, 10)):
-    fig, ax = plt.subplots(1, figsize=figsize)
-    return fig, ax
 
 
 def create_residual_diagnostics_plot(
@@ -177,66 +232,11 @@ def create_residual_diagnostics_plot(
     return plots
 
 
-def get_model_config(model:Prophet):
-    model_config = dict()
-    module = "numpy"
-    if module not in sys.modules:
-        raise Exception(f"{module} is not imported")
-
-    config = copy.deepcopy(model.__dict__)
-    model.history_dates = pd.DataFrame(model.history_dates)
-
-    config["params"].pop("trend")
-
-    for key, value in config.items():
-        if isinstance(value, pd.DataFrame):
-            model_config[f"{key}"] = File.as_html(value)
-        elif isinstance(value, np.ndarray):
-            model_config[f"{key}"] = File.as_html(pd.DataFrame(value))
-        elif isinstance(value, pd.Series):
-            model_config[f"{key}"] = File.as_html(pd.DataFrame(value))
-        else:
-            model_config[f"{key}"] = value
-
-    return model_config
-
-
-def _get_residuals(forecast, y):
-    forecast["e"] = y - forecast.yhat
-    forecast["e_z"] = stats.zscore(
-        forecast["e"], nan_policy="omit"
-    )  # Normalization mean=0, std=1
-    return forecast
-
-
-def _detect_anomalies(forecast, y):
-
-    forecast["anomaly"] = 0
-
-    forecast.loc[y > forecast["yhat_upper"], "anomaly"] = 1
-    forecast.loc[y < forecast["yhat_lower"], "anomaly"] = -1
-
-    # Anomaly importances
-    forecast["importance"] = 0
-    forecast.loc[forecast["anomaly"] == 1, "importance"] = (
-        y - forecast["yhat_upper"]
-    ) / y
-    forecast.loc[forecast["anomaly"] == -1, "importance"] = (
-        forecast["yhat_lower"] - y
-    ) / y
-
-    return forecast
-
-
-def create_serialized_model(model:Prophet):
+def create_serialized_model(model: Prophet):
     # create a temporary file and return File field with serialized model
     tmp = tempfile.NamedTemporaryFile("w", delete=False)
     json.dump(model_to_json(model), tmp)
     return File(tmp.name)
-
-
-def _get_dataframe(df, nrows=1000):
-    return File.as_html(df.head(n=nrows))
 
 
 def create_summary(
