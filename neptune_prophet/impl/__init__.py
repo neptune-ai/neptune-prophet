@@ -235,7 +235,7 @@ def create_serialized_model(model):
     return File(tmp.name)
 
 
-def get_dataframe(df, nrows=1000):
+def _get_dataframe(df, nrows=1000):
     return File.as_html(df.head(n=nrows))
 
 
