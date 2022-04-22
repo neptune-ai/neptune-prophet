@@ -256,7 +256,7 @@ def create_summary(
         "serialized_model": create_serialized_model(model),
     }
 
-    prophet_summary["dataframes"] = {"forecast": get_dataframe(forecast)}
+    prophet_summary["dataframes"] = {"forecast": _get_dataframe(forecast)}
 
     if cv_metrics_df is not None:
         prophet_summary["metrics"] = cv_metrics_df.to_dict(orient="records")[0]
