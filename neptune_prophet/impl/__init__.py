@@ -59,7 +59,7 @@ import tempfile
 
 
 def create_forecast_plots(
-    model, forecast, df: pd.DataFrame = None, log_interactive=True
+    model:Prophet, forecast, df: pd.DataFrame = None, log_interactive=True
 ):
     forecast_plots = dict()
 
@@ -177,7 +177,7 @@ def create_residual_diagnostics_plot(
     return plots
 
 
-def get_model_config(model: Prophet):
+def get_model_config(model:Prophet):
     model_config = dict()
     module = "numpy"
     if module not in sys.modules:
@@ -240,7 +240,7 @@ def _get_dataframe(df, nrows=1000):
 
 
 def create_summary(
-    model,
+    model: Prophet,
     forecast: pd.DataFrame,
     df: pd.DataFrame = None,
     cv_metrics_df: pd.DataFrame = None,
