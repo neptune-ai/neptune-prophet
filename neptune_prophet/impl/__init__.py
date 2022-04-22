@@ -228,7 +228,7 @@ def _detect_anomalies(forecast, y):
     return forecast
 
 
-def create_serialized_model(model):
+def create_serialized_model(model:Prophet):
     # create a temporary file and return File field with serialized model
     tmp = tempfile.NamedTemporaryFile("w", delete=False)
     json.dump(model_to_json(model), tmp)
