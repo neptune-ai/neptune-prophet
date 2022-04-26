@@ -58,20 +58,6 @@ import json
 import tempfile
 
 
-def get_cross_validation_results(all_params, metrics: list, metric_name="rmse"):
-
-    cv_results = dict()
-
-    tuning_results = pd.DataFrame(all_params)
-    tuning_results[metric_name] = metrics
-    cv_results["tuning_results"] = tuning_results.to_dict()
-
-    best_params = all_params[np.argmin(metrics)]
-    cv_results["best_params"] = best_params
-
-    return cv_results
-
-
 def _get_figure(figsize=(20, 10)):
     fig, ax = plt.subplots(1, figsize=figsize)
     return fig, ax
@@ -243,7 +229,6 @@ def create_summary(
     model: Prophet,
     forecast: pd.DataFrame,
     df: pd.DataFrame = None,
-    cv_metrics_df: pd.DataFrame = None,
     log_charts=True,
     log_interactive=True,
     alpha=0.7,
@@ -257,9 +242,6 @@ def create_summary(
     }
 
     prophet_summary["dataframes"] = {"forecast": _get_dataframe(forecast)}
-
-    if cv_metrics_df is not None:
-        prophet_summary["metrics"] = cv_metrics_df.to_dict(orient="records")[0]
 
     if df is not None:
         prophet_summary[f"dataframes"]["df"] = File.as_html(df)
