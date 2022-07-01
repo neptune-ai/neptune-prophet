@@ -25,7 +25,7 @@ __all__ = [
 # TODO: use `warnings.warn` for user caused problems: https://stackoverflow.com/a/14762106/1565454
 import tempfile
 
-from pyparsing import Optional
+from typing import Optional
 
 try:
     # neptune-client=0.9.0+ package structure
