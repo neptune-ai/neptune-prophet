@@ -16,7 +16,15 @@ def main():
         all_deps += extras[group_name]
     extras["all"] = all_deps
 
-    base_libs = ["neptune-client>=0.10.0", ""]  # TODO: update requirements
+    base_libs = [
+        "matplotlib",
+        "neptune-client>=0.10.0",
+        "numpy",
+        "pandas",
+        "prophet>=1.0",
+        "scipy",
+        "statsmodels",
+    ]
 
     version = None
     if os.path.exists("PKG-INFO"):
@@ -29,18 +37,18 @@ def main():
         version = versioneer.get_version()
 
     setup(
-        name="neptune-prophet",  # TODO: update package name to `neptune-*`
+        name="neptune-prophet",
         version=version,
-        description="Neptune.ai integration template integration library",  # TODO: update integration name
+        description="Neptune.ai Prophet integration library",
         author="neptune.ai",
         support="contact@neptune.ai",
         author_email="contact@neptune.ai",
         # package url management: https://stackoverflow.com/a/56243786/1565454
         url="https://neptune.ai/",
         project_urls={
-            "Tracker": "https://github.com/neptune-ai/neptune-integration-template/issues",  # TODO: update
-            "Source": "https://github.com/neptune-ai/neptune-integration-template",  # TODO: update
-            "Documentation": "https://docs.neptune.ai/integrations-and-supported-tools/model-training/",  # TODO: update
+            "Tracker": "https://github.com/neptune-ai/neptune-prophet/issues",
+            "Source": "https://github.com/neptune-ai/neptune-prophet",
+            "Documentation": "https://docs.neptune.ai/integrations-and-supported-tools/model-training/",
         },
         long_description=readme,
         long_description_content_type="text/markdown",

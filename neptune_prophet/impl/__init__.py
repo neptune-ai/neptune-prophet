@@ -15,8 +15,11 @@
 #
 
 __all__ = [
-    # TODO: add importable public names here, `neptune-client` uses `import *`
-    # https://docs.python.org/3/tutorial/modules.html#importing-from-a-package
+    "get_model_config",
+    "create_forecast_plots",
+    "create_residual_diagnostics_plot",
+    "create_serialized_model",
+    "create_summary",
 ]
 
 # TODO: use `warnings.warn` for user caused problems: https://stackoverflow.com/a/14762106/1565454
@@ -131,8 +134,8 @@ def create_forecast_plots(
 def create_residual_diagnostics_plot(
     fcst: pd.DataFrame,
     y: pd.Series,
-    alpha: float=0.7,
-    log_interactive :bool=True,
+    alpha: float = 0.7,
+    log_interactive: bool = True,
 ):
     residuals = _get_residuals(fcst, y)
     plots = dict()
@@ -217,9 +220,7 @@ def create_summary(
                 "residuals_diagnostics_charts": create_residual_diagnostics_plot(
                     fcst, df.y, alpha, log_interactive=log_interactive
                 ),
-                **create_forecast_plots(
-                    model, fcst, log_interactive=log_interactive
-                ),
+                **create_forecast_plots(model, fcst, log_interactive=log_interactive),
             }
     else:
         if log_charts:
