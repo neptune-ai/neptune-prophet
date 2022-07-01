@@ -43,7 +43,7 @@ INTEGRATION_VERSION_KEY = (
 
 # TODO: Implementation of neptune-integration here
 
-from fbprophet import Prophet
+from prophet import Prophet
 import pandas as pd
 import numpy as np
 import sys
@@ -51,9 +51,9 @@ import copy
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from scipy import stats
-from fbprophet.plot import plot_plotly, plot_components_plotly
-from fbprophet.plot import add_changepoints_to_plot
-from fbprophet.serialize import model_to_json
+from prophet.plot import plot_plotly, plot_components_plotly
+from prophet.plot import add_changepoints_to_plot
+from prophet.serialize import model_to_json
 import json
 import tempfile
 
@@ -69,6 +69,7 @@ def get_model_config(model: Prophet):
     if module not in sys.modules:
         raise Exception(f"{module} is not imported")
 
+    # no copy
     config = copy.deepcopy(model.__dict__)
     model.history_dates = pd.DataFrame(model.history_dates)
 
@@ -119,19 +120,12 @@ def _detect_anomalies(forecast, y):
 
 
 def create_forecast_plots(
-    model: Prophet, forecast, df: pd.DataFrame = None, log_interactive=True
+    model: Prophet, forecast, y: pd.Series, log_interactive=True
 ):
     forecast_plots = dict()
 
     yhat_values = forecast.yhat.tolist()
     forecast_plots["yhat"] = FloatSeries(yhat_values)
-
-    if df is not None:
-        y_values = df.y.tolist()
-        forecast_plots["y"] = FloatSeries(y_values)
-        if "VWAP" in df.columns:
-            vwap_values = df.VWAP.tolist()
-            forecast_plots["VWAP"] = FloatSeries(vwap_values)
 
     if log_interactive:
         fig1 = plot_plotly(model, forecast)
@@ -158,14 +152,17 @@ def create_forecast_plots(
         return forecast_plots
 
 
+# TODO: what is residuals forecast?
 def create_residual_diagnostics_plot(
     residuals_forecast, y: pd.Series, alpha=0.7, log_interactive=True
 ):
+    # always add
     if "e_z" not in residuals_forecast.columns:
         residuals_forecast = _get_residuals(residuals_forecast, y)
     if "anomaly" not in residuals_forecast.columns:
         residuals_forecast = _detect_anomalies(residuals_forecast, y)
 
+    # client-wide defaults ?
     colors = {0: "#0079b9", 1: "red", -1: "red"}
     c = (
         residuals_forecast.anomaly.map(colors)
@@ -173,6 +170,8 @@ def create_residual_diagnostics_plot(
         else None
     )
     plots = dict()
+
+    # TODO: use lowercase names
 
     fig1, ax1 = _get_figure()
     sm.qqplot(residuals_forecast["e_z"], line="45", ax=ax1)
@@ -228,12 +227,15 @@ def create_serialized_model(model: Prophet):
 def create_summary(
     model: Prophet,
     forecast: pd.DataFrame,
-    df: pd.DataFrame = None,
+    y: pd.Series,
+    # df: pd.DataFrame = None,
     log_charts=True,
-    log_interactive=True,
-    alpha=0.7,
+    nrows=1000,
 ):
 
+    # not needed
+    log_interactive=True
+    alpha=0.7
     prophet_summary = dict()
 
     prophet_summary["model"] = {
@@ -241,7 +243,7 @@ def create_summary(
         "serialized_model": create_serialized_model(model),
     }
 
-    prophet_summary["dataframes"] = {"forecast": _get_dataframe(forecast)}
+    prophet_summary["dataframes"] = {"forecast": _get_dataframe(forecast, nrows=nrows)}
 
     if df is not None:
         prophet_summary[f"dataframes"]["df"] = File.as_html(df)

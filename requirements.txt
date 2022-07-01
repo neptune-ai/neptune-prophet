@@ -1,0 +1,7 @@
+matplotlib
+neptune-client
+numpy
+pandas
+prophet>=1.0
+scipy
+statsmodels
