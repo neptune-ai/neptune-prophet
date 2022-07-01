@@ -23,6 +23,8 @@ __all__ = [
 import tempfile
 import warnings
 
+from pyparsing import Optional
+
 try:
     # neptune-client=0.9.0+ package structure
     import neptune.new as neptune
@@ -64,19 +66,14 @@ def _get_figure(figsize=(20, 10)):
 
 
 def get_model_config(model: Prophet):
-    model_config = dict()
-    module = "numpy"
-    if module not in sys.modules:
-        raise Exception(f"{module} is not imported")
-
-    # no copy
-    config = copy.deepcopy(model.__dict__)
+    config = model.__dict__
     model.history_dates = pd.DataFrame(model.history_dates)
 
-    config["params"].pop("trend")
-
+    model_config = dict()
     for key, value in config.items():
-        if isinstance(value, pd.DataFrame):
+        if key == "trend":
+            continue
+        elif isinstance(value, pd.DataFrame):
             model_config[f"{key}"] = File.as_html(value)
         elif isinstance(value, np.ndarray):
             model_config[f"{key}"] = File.as_html(pd.DataFrame(value))
@@ -120,7 +117,7 @@ def _detect_anomalies(forecast, y):
 
 
 def create_forecast_plots(
-    model: Prophet, forecast, y: pd.Series, log_interactive=True
+    model: Prophet, forecast, y: pd.Series, log_interactive=True,
 ):
     forecast_plots = dict()
 
@@ -130,9 +127,11 @@ def create_forecast_plots(
     if log_interactive:
         fig1 = plot_plotly(model, forecast)
         forecast_plots["forecast"] = File.as_html(fig1)
+
         if "trend" in forecast.columns:
             fig2 = plot_components_plotly(model, forecast, figsize=(1000, 400))
             forecast_plots["forecast_components"] = File.as_html(fig2)
+
             fig3 = model.plot(forecast)
             changepoint_fig = add_changepoints_to_plot(fig3.gca(), model, forecast)
             forecast_plots["forecast_changepoints"] = File.as_image(
@@ -142,9 +141,11 @@ def create_forecast_plots(
     else:
         fig1 = model.plot(forecast)
         forecast_plots["forecast"] = File.as_image(fig1)
+
         if "trend" in forecast.columns:
             fig2 = model.plot_components(forecast)
             forecast_plots["forecast_components"] = File.as_image(fig2)
+
             changepoint_fig = add_changepoints_to_plot(fig1.gca(), model, forecast)
             forecast_plots["forecast_changepoints"] = File.as_image(
                 changepoint_fig[-1].figure
@@ -170,8 +171,6 @@ def create_residual_diagnostics_plot(
         else None
     )
     plots = dict()
-
-    # TODO: use lowercase names
 
     fig1, ax1 = _get_figure()
     sm.qqplot(residuals_forecast["e_z"], line="45", ax=ax1)
@@ -202,16 +201,16 @@ def create_residual_diagnostics_plot(
     ax5.set_xlabel("Dates")
     ax5.set_title("DS vs Normalized errors")
 
-    plots["Histogram"] = File.as_image(fig2)
-    plots["ACF"] = File.as_image(fig4)
+    plots["histogram"] = File.as_image(fig2)
+    plots["acf"] = File.as_image(fig4)
 
     if log_interactive:
-        plots["QQ_plot"] = File.as_html(fig1)
-        plots["Actual_vs_Normalized_errors"] = File.as_html(fig3)
-        plots["DS_vs_Normalized_errors"] = File.as_html(fig5)
+        plots["qq_plot"] = File.as_html(fig1)
+        plots["actual_vs_normalized_errors"] = File.as_html(fig3)
+        plots["ds_vs_normalized_errors"] = File.as_html(fig5)
     else:
-        plots["QQ_plot"] = File.as_image(fig1)
-        plots["Actual_vs_Normalized_errors"] = File.as_image(fig3)
+        plots["qq_plot"] = File.as_image(fig1)
+        plots["actual_vs_normalized_errors"] = File.as_image(fig3)
         plots["DS_vs_Normalized_errors"] = File.as_image(fig5)
 
     return plots
@@ -227,13 +226,11 @@ def create_serialized_model(model: Prophet):
 def create_summary(
     model: Prophet,
     forecast: pd.DataFrame,
-    y: pd.Series,
-    # df: pd.DataFrame = None,
-    log_charts=True,
-    nrows=1000,
+    df: Optional[pd.DataFrame] = None,
+    log_charts: bool =True,
+    nrows: int=1000,
 ):
 
-    # not needed
     log_interactive=True
     alpha=0.7
     prophet_summary = dict()
@@ -273,7 +270,5 @@ def create_summary(
                     model, forecast, log_interactive=log_interactive
                 )
             }
-
-    plt.close("all")
 
     return prophet_summary
