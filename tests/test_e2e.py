@@ -11,7 +11,12 @@ except ImportError:
 
 
 @pytest.mark.parametrize("log_interactive", [False, True])
-def test_e2e_with_matplotlib(dataset, log_interactive):
+def test_e2e(dataset, log_interactive):
+
+    run = neptune.init(
+        project="common/fbprophet-integration",
+        api_token="ANONYMOUS",
+    )
 
     model = Prophet()
     model.fit(dataset)
@@ -19,12 +24,9 @@ def test_e2e_with_matplotlib(dataset, log_interactive):
     future = model.make_future_dataframe(periods=365)
     forecast = model.predict(future)
 
-    run = neptune.init(
-        project="common/fbprophet-integration",
-        api_token="ANONYMOUS",
-    )
-
     run["model"] = get_model_config(model)
+    run["serialized_model"] = create_serialized_model(model)
+
     run["forecast_plots"] = create_forecast_plots(
         model,
         forecast,
@@ -38,8 +40,6 @@ def test_e2e_with_matplotlib(dataset, log_interactive):
         dataset.y,
         log_interactive=log_interactive,
     )
-
-    run["serialized_model"] = create_serialized_model(model)
 
     run["summary"] = create_summary(
         model,
