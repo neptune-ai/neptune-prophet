@@ -34,14 +34,11 @@ try:
 except ImportError:
     # neptune-client>=1.0.0 package structure
     import neptune
+    from neptune.types import File, FloatSeries
 
-from neptune_prophet import __version__  # TODO: change module name
+from neptune_prophet import __version__
 
-INTEGRATION_VERSION_KEY = (
-    "source_code/integrations/integration-template"  # TODO: change path
-)
-
-# TODO: Implementation of neptune-integration here
+INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-prophet"
 
 from prophet import Prophet
 import pandas as pd
