@@ -193,10 +193,10 @@ def create_summary(
     fcst: pd.DataFrame,
     df: Optional[pd.DataFrame] = None,
     log_charts: bool = True,
+    log_interactive: bool = True,
     nrows: int = 1000,
 ):
 
-    log_interactive = True
     alpha = 0.7
     prophet_summary = dict()
 
