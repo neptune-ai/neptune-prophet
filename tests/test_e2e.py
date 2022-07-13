@@ -13,6 +13,12 @@ except ImportError:
 @pytest.mark.parametrize("log_interactive", [False, True])
 def test_e2e(dataset, log_interactive):
 
+    if log_interactive:
+        try:
+            import plotly
+        except ModuleNotFoundError:
+            pytest.skip("plotly is needed for log_interactive to work")
+
     run = neptune.init(
         project="common/fbprophet-integration",
         api_token="ANONYMOUS",
