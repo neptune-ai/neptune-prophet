@@ -25,7 +25,7 @@ __all__ = [
 # TODO: use `warnings.warn` for user caused problems: https://stackoverflow.com/a/14762106/1565454
 import tempfile
 
-from typing import Optional
+from typing import Any, Dict, Optional
 
 try:
     # neptune-client=0.9.0+ package structure
@@ -58,7 +58,29 @@ def _get_figure(figsize=(20, 10)):
     return fig, ax
 
 
-def get_model_config(model: Prophet):
+def get_model_config(model: Prophet) -> Dict[str, Any]:
+    """Extract configuration from the Ptophet model
+
+    Args:
+        model (:obj:`Prophet`):
+            | Fitted Prophet model object
+
+    Returns:
+        ``dict`` with all summary items.
+
+    Examples:
+        .. code:: python3
+
+            from prophet import Prophet
+            import neptune.new as neptune
+
+            neptune.init(project='my_workspace/my_project')
+            model = Prophet()
+            model.fit(dataset)
+
+            run["model_config"] = get_model_config(model)
+
+    """
     config = model.__dict__
     model.history_dates = pd.DataFrame(model.history_dates)
 
@@ -78,14 +100,14 @@ def get_model_config(model: Prophet):
     return model_config
 
 
-def _get_residuals(fcst, y):
+def _get_residuals(fcst: pd.DataFrame, y: pd.Series):
     return stats.zscore(
         y - fcst.yhat,
         nan_policy="omit",
     )
 
 
-def _get_dataframe(df, nrows=1000):
+def _get_dataframe(df: pd.DataFrame, nrows: int = 1000) -> File:
     return File.as_html(df.head(n=nrows))
 
 
@@ -93,7 +115,7 @@ def create_forecast_plots(
     model: Prophet,
     fcst: pd.DataFrame,
     log_interactive: bool = True,
-):
+) -> Dict[str, Any]:
     forecast_plots = dict()
 
     yhat_values = fcst.yhat.tolist()
@@ -134,7 +156,7 @@ def create_residual_diagnostics_plot(
     y: pd.Series,
     alpha: float = 0.7,
     log_interactive: bool = True,
-):
+) -> Dict[str, Any]:
     residuals = _get_residuals(fcst, y)
     plots = dict()
 
@@ -182,7 +204,7 @@ def create_residual_diagnostics_plot(
     return plots
 
 
-def create_serialized_model(model: Prophet):
+def create_serialized_model(model: Prophet) -> File:
     # create a temporary file and return File field with serialized model
     tmp = tempfile.NamedTemporaryFile("w", delete=False)
     json.dump(model_to_json(model), tmp)
@@ -196,7 +218,7 @@ def create_summary(
     log_charts: bool = True,
     log_interactive: bool = True,
     nrows: int = 1000,
-):
+) -> Dict[str, Any]:
 
     alpha = 0.7
     prophet_summary = dict()
