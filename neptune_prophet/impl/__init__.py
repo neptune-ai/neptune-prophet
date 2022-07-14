@@ -148,7 +148,7 @@ def create_forecast_plots(
         try:
             import plotly
         except ModuleNotFoundError:
-            raise ImportError("plotly is needed for log_interactive to work")
+            raise RuntimeError("plotly is needed for log_interactive to work")
 
     forecast_plots = dict()
 
@@ -223,7 +223,7 @@ def create_residual_diagnostics_plots(
         try:
             import plotly
         except ModuleNotFoundError:
-            raise ImportError("plotly is needed for log_interactive to work")
+            raise RuntimeError("plotly is needed for log_interactive to work")
 
     residuals = _get_residuals(fcst, y)
     plots = dict()
