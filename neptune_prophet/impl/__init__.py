@@ -17,7 +17,7 @@
 __all__ = [
     "get_model_config",
     "create_forecast_plots",
-    "create_residual_diagnostics_plot",
+    "create_residual_diagnostics_plots",
     "create_serialized_model",
     "create_summary",
 ]
@@ -59,7 +59,7 @@ def _get_figure(figsize=(20, 10)):
 
 
 def get_model_config(model: Prophet) -> Dict[str, Any]:
-    """Extract configuration from the Ptophet model
+    """Extract configuration from the Prophet model
 
     Args:
         model (:obj:`Prophet`):
@@ -79,7 +79,6 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
             model.fit(dataset)
 
             run["model_config"] = get_model_config(model)
-
     """
     config = model.__dict__
     model.history_dates = pd.DataFrame(model.history_dates)
@@ -116,6 +115,32 @@ def create_forecast_plots(
     fcst: pd.DataFrame,
     log_interactive: bool = True,
 ) -> Dict[str, Any]:
+    """Prepare the Prophet plots to be saved to Neptune
+
+    Args:
+        model (:obj:`Prophet`):
+            | Fitted Prophet model object
+        fcst (:obj:`pd.DataFrame`):
+            | Forecast returned by Prophet
+        log_interactive (:obj:`bool`):
+            | Save the plots as interactive, HTML files.
+
+    Returns:
+        ``dict`` with all the plots.
+
+    Examples:
+        .. code:: python3
+
+            from prophet import Prophet
+            import neptune.new as neptune
+
+            neptune.init(project='my_workspace/my_project')
+            model = Prophet()
+            model.fit(dataset)
+
+            run["forecast_plots"] = create_forecast_plots(model)
+    """
+
     forecast_plots = dict()
 
     yhat_values = fcst.yhat.tolist()
@@ -151,12 +176,40 @@ def create_forecast_plots(
         return forecast_plots
 
 
-def create_residual_diagnostics_plot(
+def create_residual_diagnostics_plots(
     fcst: pd.DataFrame,
     y: pd.Series,
-    alpha: float = 0.7,
     log_interactive: bool = True,
+    alpha: float = 0.7,
 ) -> Dict[str, Any]:
+    """Prepare additional diagnostic plots to be saved to Neptune
+
+    Args:
+        fcst (:obj:`pd.DataFrame`):
+            | Forecast returned by Prophet
+        y (:obj:`pd.Series`):
+            | The predicted values
+        log_interactive (:obj:`bool`):
+            | Save the plots as interactive, HTML files.
+        alpha (:obj:`float`):
+            | Transparency level of the plots.
+
+    Returns:
+        ``dict`` with all the plots.
+
+    Examples:
+        .. code:: python3
+
+            from prophet import Prophet
+            import neptune.new as neptune
+
+            neptune.init(project='my_workspace/my_project')
+            model = Prophet()
+            model.fit(dataset)
+
+            run["residual_diagnostics_plot"] = create_residual_diagnostics_plots(model)
+    """
+
     residuals = _get_residuals(fcst, y)
     plots = dict()
 
@@ -205,6 +258,28 @@ def create_residual_diagnostics_plot(
 
 
 def create_serialized_model(model: Prophet) -> File:
+    """Serialize the Prophet model
+
+    Args:
+        model (:obj:`Prophet`):
+            | Fitted Prophet model object
+
+    Returns:
+        ``File`` containing the model.
+
+    Examples:
+        .. code:: python3
+
+            from prophet import Prophet
+            import neptune.new as neptune
+
+            neptune.init(project='my_workspace/my_project')
+            model = Prophet()
+            model.fit(dataset)
+
+            run["model"] = create_serialized_model(model)
+    """
+
     # create a temporary file and return File field with serialized model
     tmp = tempfile.NamedTemporaryFile("w", delete=False)
     json.dump(model_to_json(model), tmp)
@@ -219,6 +294,37 @@ def create_summary(
     log_interactive: bool = True,
     nrows: int = 1000,
 ) -> Dict[str, Any]:
+    """Prepare additional diagnostic plots to be saved to Neptune
+
+    Args:
+        model (:obj:`Prophet`):
+            | Fitted Prophet model object.
+        fcst (:obj:`pd.DataFrame`):
+            | Forecast returned by Prophet.
+        df (:obj:`pd.DataFrame`):
+            | The dataset used for making the forecast.
+        log_charts (:obj:`bool`):
+            | Aditionally, save the diagnostic plots.
+        log_interactive (:obj:`bool`):
+            | Save the plots as interactive, HTML files.
+        nrows (:obj:`int`):
+            | Number of rows the dataset should be downsampled to.
+
+    Returns:
+        ``dict`` with all the plots.
+
+    Examples:
+        .. code:: python3
+
+            from prophet import Prophet
+            import neptune.new as neptune
+
+            neptune.init(project='my_workspace/my_project')
+            model = Prophet()
+            model.fit(dataset)
+
+            run["summary"] = create_summary(model)
+    """
 
     alpha = 0.7
     prophet_summary = dict()
@@ -237,7 +343,7 @@ def create_summary(
 
         if log_charts:
             prophet_summary["diagnostics_charts"] = {
-                "residuals_diagnostics_charts": create_residual_diagnostics_plot(
+                "residuals_diagnostics_charts": create_residual_diagnostics_plots(
                     fcst, df.y, alpha, log_interactive=log_interactive
                 ),
                 **create_forecast_plots(model, fcst, log_interactive=log_interactive),

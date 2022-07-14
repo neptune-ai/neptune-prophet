@@ -41,7 +41,7 @@ def test_e2e(dataset, log_interactive):
 
     predicted = model.predict(dataset)
 
-    run["residual_diagnostics"] = create_residual_diagnostics_plot(
+    run["residual_diagnostics"] = create_residual_diagnostics_plots(
         predicted,
         dataset.y,
         log_interactive=log_interactive,
