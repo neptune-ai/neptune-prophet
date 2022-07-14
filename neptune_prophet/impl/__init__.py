@@ -344,7 +344,10 @@ def create_summary(
         if log_charts:
             prophet_summary["diagnostics_charts"] = {
                 "residuals_diagnostics_charts": create_residual_diagnostics_plots(
-                    fcst, df.y, alpha, log_interactive=log_interactive
+                    fcst,
+                    df.y,
+                    log_interactive=log_interactive,
+                    alpha=alpha,
                 ),
                 **create_forecast_plots(model, fcst, log_interactive=log_interactive),
             }
