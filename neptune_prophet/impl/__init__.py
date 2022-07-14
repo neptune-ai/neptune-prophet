@@ -167,10 +167,12 @@ def create_forecast_plots(
             forecast_plots["forecast_changepoints"] = File.as_image(
                 changepoint_fig[-1].figure
             )
+            plt.close(fig3)
         return forecast_plots
     else:
         fig1 = model.plot(fcst)
         forecast_plots["forecast"] = File.as_image(fig1)
+        plt.close(fig1)
 
         if "trend" in fcst.columns:
             fig2 = model.plot_components(fcst)
@@ -180,6 +182,7 @@ def create_forecast_plots(
             forecast_plots["forecast_changepoints"] = File.as_image(
                 changepoint_fig[-1].figure
             )
+            plt.close(fig2)
 
         return forecast_plots
 
@@ -268,6 +271,12 @@ def create_residual_diagnostics_plots(
         plots["actual_vs_normalized_errors"] = File.as_image(fig3)
         plots["ds_vs_normalized_errors"] = File.as_image(fig5)
 
+    plt.close(fig1)
+    plt.close(fig2)
+    plt.close(fig3)
+    plt.close(fig4)
+    plt.close(fig5)
+
     return plots
 
 
@@ -300,10 +309,12 @@ def create_serialized_model(model: Prophet) -> File:
     return File(tmp.name)
 
 
+# TODO: describe better the fcst and df arguments
+# TODO: do we need to support fcst & df ?
 def create_summary(
     model: Prophet,
-    fcst: pd.DataFrame,
     df: Optional[pd.DataFrame] = None,
+    fcst: Optional[pd.DataFrame] = None,
     log_charts: bool = True,
     log_interactive: bool = True,
     nrows: int = 1000,
@@ -313,10 +324,10 @@ def create_summary(
     Args:
         model (:obj:`Prophet`):
             | Fitted Prophet model object.
-        fcst (:obj:`pd.DataFrame`):
-            | Forecast returned by Prophet.
         df (:obj:`pd.DataFrame`):
             | The dataset used for making the forecast.
+        fcst (:obj:`pd.DataFrame`):
+            | Forecast returned by Prophet. If not provided, will be calculated using df.
         log_charts (:obj:`bool`):
             | Aditionally, save the diagnostic plots.
         log_interactive (:obj:`bool`):
@@ -359,8 +370,11 @@ def create_summary(
     if df is not None:
         prophet_summary[f"dataframes"]["df"] = File.as_html(df)
 
+        if fcst is None:
+            fcst = model.predict(fcst)
+
         if len(fcst.yhat) != len(df.y):
-            raise ValueError("Lenghts of the true and the forecast do not match")
+            raise RuntimeError("Lenghts of the true and the forecast do not match")
 
         if log_charts:
             prophet_summary["diagnostics_charts"] = {
