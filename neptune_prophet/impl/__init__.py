@@ -22,7 +22,6 @@ __all__ = [
     "create_summary",
 ]
 
-# TODO: use `warnings.warn` for user caused problems: https://stackoverflow.com/a/14762106/1565454
 import tempfile
 
 from typing import Any, Dict, Optional
