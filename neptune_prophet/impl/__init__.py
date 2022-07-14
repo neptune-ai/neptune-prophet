@@ -125,6 +125,7 @@ def create_forecast_plots(
             forecast_plots["forecast_changepoints"] = File.as_image(
                 changepoint_fig[-1].figure
             )
+
         return forecast_plots
 
 
