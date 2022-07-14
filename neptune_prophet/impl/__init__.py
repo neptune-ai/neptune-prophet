@@ -141,6 +141,12 @@ def create_forecast_plots(
             run["forecast_plots"] = create_forecast_plots(model)
     """
 
+    if log_interactive:
+        try:
+            import plotly
+        except ModuleNotFoundError:
+            raise ImportError("plotly is needed for log_interactive to work")
+
     forecast_plots = dict()
 
     yhat_values = fcst.yhat.tolist()
@@ -209,6 +215,12 @@ def create_residual_diagnostics_plots(
 
             run["residual_diagnostics_plot"] = create_residual_diagnostics_plots(model)
     """
+
+    if log_interactive:
+        try:
+            import plotly
+        except ModuleNotFoundError:
+            raise ImportError("plotly is needed for log_interactive to work")
 
     residuals = _get_residuals(fcst, y)
     plots = dict()
@@ -325,6 +337,12 @@ def create_summary(
 
             run["summary"] = create_summary(model)
     """
+
+    if log_interactive:
+        try:
+            import plotly
+        except ModuleNotFoundError:
+            raise ImportError("plotly is needed for log_interactive to work")
 
     alpha = 0.7
     prophet_summary = dict()
