@@ -100,6 +100,9 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
 
 
 def _get_residuals(fcst: pd.DataFrame, y: pd.Series):
+    if len(fcst.yhat) != len(y):
+        raise ValueError("Lenghts of the true and the predicted series do not match")
+
     return stats.zscore(
         y - fcst.yhat,
         nan_policy="omit",
@@ -356,8 +359,9 @@ def create_summary(
 
     if df is not None:
         prophet_summary[f"dataframes"]["df"] = File.as_html(df)
-        if len(fcst) > len(df.y):
-            fcst = fcst.truncate(after=len(df.y) - 1)
+
+        if len(fcst.yhat) != len(df.y):
+            raise ValueError("Lenghts of the true and the forecast do not match")
 
         if log_charts:
             prophet_summary["diagnostics_charts"] = {
