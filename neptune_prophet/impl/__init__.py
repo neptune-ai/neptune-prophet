@@ -62,7 +62,7 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
 
     Args:
         model (:obj:`Prophet`):
-            | Fitted Prophet model object
+            | Fitted Prophet model object.
 
     Returns:
         ``dict`` with all summary items.
@@ -103,7 +103,7 @@ def get_serialized_model(model: Prophet) -> File:
 
     Args:
         model (:obj:`Prophet`):
-            | Fitted Prophet model object
+            | Fitted Prophet model object.
 
     Returns:
         ``File`` containing the model.
@@ -150,9 +150,9 @@ def create_forecast_plots(
 
     Args:
         model (:obj:`Prophet`):
-            | Fitted Prophet model object
+            | Fitted Prophet model object.
         fcst (:obj:`pd.DataFrame`):
-            | Forecast returned by Prophet
+            | Forecast returned by Prophet.
         log_interactive (:obj:`bool`):
             | Save the plots as interactive, HTML files.
 
@@ -226,9 +226,9 @@ def create_residual_diagnostics_plots(
 
     Args:
         fcst (:obj:`pd.DataFrame`):
-            | Forecast returned by Prophet
+            | Forecast returned by Prophet.
         y (:obj:`pd.Series`):
-            | The predicted values
+            | The true values that were predicted.
         log_interactive (:obj:`bool`):
             | Save the plots as interactive, HTML files.
         alpha (:obj:`float`):
@@ -309,8 +309,6 @@ def create_residual_diagnostics_plots(
     return plots
 
 
-# TODO: describe better the fcst and df arguments
-# TODO: do we need to support fcst & df ?
 def create_summary(
     model: Prophet,
     df: Optional[pd.DataFrame] = None,
@@ -325,9 +323,9 @@ def create_summary(
         model (:obj:`Prophet`):
             | Fitted Prophet model object.
         df (:obj:`pd.DataFrame`):
-            | The dataset used for making the forecast.
+            | The dataset that was used for making the forecast. If provided, additional plots would be recorded.
         fcst (:obj:`pd.DataFrame`):
-            | Forecast returned by Prophet. If not provided, will be calculated using df.
+            | Forecast returned by Prophet. If not provided, will be calculated using the df data.
         log_charts (:obj:`bool`):
             | Aditionally, save the diagnostic plots.
         log_interactive (:obj:`bool`):
