@@ -49,8 +49,8 @@ def test_e2e(dataset, log_interactive):
 
     run["summary"] = create_summary(
         model,
-        forecast,
-        dataset,
+        df=dataset,
+        fcst=predicted,
         log_charts=True,
         log_interactive=log_interactive,
     )
