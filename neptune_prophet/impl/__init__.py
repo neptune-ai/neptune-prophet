@@ -192,7 +192,7 @@ def create_forecast_plots(
         try:
             import plotly
         except ModuleNotFoundError:
-            raise RuntimeError("plotly is needed for log_interactive to work")
+            raise ModuleNotFoundError("plotly is needed for log_interactive to work")
 
     if not _is_fcst(fcst):
         raise ValueError("fcst is not valid a Prophet forecast")
@@ -276,7 +276,7 @@ def create_residual_diagnostics_plots(
         try:
             import plotly
         except ModuleNotFoundError:
-            raise RuntimeError("plotly is needed for log_interactive to work")
+            raise ModuleNotFoundError("plotly is needed for log_interactive to work")
 
     if not _is_fcst(fcst):
         raise ValueError("fcst is not valid a Prophet forecast")
@@ -378,7 +378,7 @@ def create_summary(
         try:
             import plotly
         except ModuleNotFoundError:
-            raise ImportError("plotly is needed for log_interactive to work")
+            raise ModuleNotFoundError("plotly is needed for log_interactive to work")
 
     alpha = 0.7
     prophet_summary = dict()
