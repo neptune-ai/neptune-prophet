@@ -24,7 +24,7 @@ __all__ = [
 
 import tempfile
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 try:
     # neptune-client=0.9.0+ package structure
@@ -137,6 +137,25 @@ def _get_residuals(fcst: pd.DataFrame, y: pd.Series):
     )
 
 
+def _is_fcst(obj: Any) -> bool:
+    if not isinstance(obj, pd.DataFrame):
+        return False
+    return "yhat" in obj.columns
+
+
+def _extract_forecast_components(model:Prophet, fcst:pd.DataFrame) -> List[str]:
+    # it is the same code as in Prophet, but simplified:
+    # https://github.com/facebook/prophet/blob/ba9a5a2c6e2400206017a5ddfd71f5042da9f65b/python/prophet/plot.py#L127-L140
+    components = ['trend']
+    if model.train_holiday_names is not None and 'holidays' in fcst:
+        components.append('holidays')
+    components.extend([
+        name for name in sorted(model.seasonalities)
+        if name in fcst
+    ])
+    return components
+
+
 def _get_dataframe(df: pd.DataFrame, nrows: int = 1000) -> File:
     return File.as_html(df.head(n=nrows))
 
@@ -178,10 +197,14 @@ def create_forecast_plots(
         except ModuleNotFoundError:
             raise RuntimeError("plotly is needed for log_interactive to work")
 
+    if not _is_fcst(fcst):
+        raise ValueError("fcst is not valid a Prophet forecast")
+
     forecast_plots = dict()
 
-    yhat_values = fcst.yhat.tolist()
-    forecast_plots["yhat"] = FloatSeries(yhat_values)
+    for column in ["yhat", "yhat_lower", "yhat_upper"] + _extract_forecast_components(model, fcst):
+        values = fcst.loc[:, column].tolist()
+        forecast_plots[column] = FloatSeries(values)
 
     if log_interactive:
         fig1 = plot_plotly(model, fcst)
@@ -255,6 +278,9 @@ def create_residual_diagnostics_plots(
             import plotly
         except ModuleNotFoundError:
             raise RuntimeError("plotly is needed for log_interactive to work")
+
+    if not _is_fcst(fcst):
+        raise ValueError("fcst is not valid a Prophet forecast")
 
     residuals = _get_residuals(fcst, y)
     plots = dict()
@@ -370,6 +396,8 @@ def create_summary(
 
         if fcst is None:
             fcst = model.predict(fcst)
+        elif not _is_fcst(fcst):
+            raise ValueError("fcst is not valid a Prophet forecast")
 
         if len(fcst.yhat) != len(df.y):
             raise RuntimeError("Lenghts of the true and the forecast do not match")
