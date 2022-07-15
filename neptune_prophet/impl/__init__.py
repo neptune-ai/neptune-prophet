@@ -143,16 +143,13 @@ def _is_fcst(obj: Any) -> bool:
     return "yhat" in obj.columns
 
 
-def _extract_forecast_components(model:Prophet, fcst:pd.DataFrame) -> List[str]:
+def _extract_forecast_components(model: Prophet, fcst: pd.DataFrame) -> List[str]:
     # it is the same code as in Prophet, but simplified:
     # https://github.com/facebook/prophet/blob/ba9a5a2c6e2400206017a5ddfd71f5042da9f65b/python/prophet/plot.py#L127-L140
-    components = ['trend']
-    if model.train_holiday_names is not None and 'holidays' in fcst:
-        components.append('holidays')
-    components.extend([
-        name for name in sorted(model.seasonalities)
-        if name in fcst
-    ])
+    components = ["trend"]
+    if model.train_holiday_names is not None and "holidays" in fcst:
+        components.append("holidays")
+    components.extend([name for name in sorted(model.seasonalities) if name in fcst])
     return components
 
 
@@ -202,7 +199,9 @@ def create_forecast_plots(
 
     forecast_plots = dict()
 
-    for column in ["yhat", "yhat_lower", "yhat_upper"] + _extract_forecast_components(model, fcst):
+    for column in ["yhat", "yhat_lower", "yhat_upper"] + _extract_forecast_components(
+        model, fcst
+    ):
         values = fcst.loc[:, column].tolist()
         forecast_plots[column] = FloatSeries(values)
 
