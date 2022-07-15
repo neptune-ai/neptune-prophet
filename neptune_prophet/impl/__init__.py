@@ -16,9 +16,9 @@
 
 __all__ = [
     "get_model_config",
+    "get_serialized_model",
     "create_forecast_plots",
     "create_residual_diagnostics_plots",
-    "get_serialized_model",
     "create_summary",
 ]
 
@@ -118,7 +118,7 @@ def get_serialized_model(model: Prophet) -> File:
             model = Prophet()
             model.fit(dataset)
 
-            run["model"] = create_serialized_model(model)
+            run["model"] = get_serialized_model(model)
     """
 
     # create a temporary file and return File field with serialized model
