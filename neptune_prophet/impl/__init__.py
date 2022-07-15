@@ -18,7 +18,7 @@ __all__ = [
     "get_model_config",
     "create_forecast_plots",
     "create_residual_diagnostics_plots",
-    "create_serialized_model",
+    "get_serialized_model",
     "create_summary",
 ]
 
@@ -96,6 +96,35 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
             model_config[f"{key}"] = value
 
     return model_config
+
+
+def get_serialized_model(model: Prophet) -> File:
+    """Serialize the Prophet model
+
+    Args:
+        model (:obj:`Prophet`):
+            | Fitted Prophet model object
+
+    Returns:
+        ``File`` containing the model.
+
+    Examples:
+        .. code:: python3
+
+            from prophet import Prophet
+            import neptune.new as neptune
+
+            neptune.init(project='my_workspace/my_project')
+            model = Prophet()
+            model.fit(dataset)
+
+            run["model"] = create_serialized_model(model)
+    """
+
+    # create a temporary file and return File field with serialized model
+    tmp = tempfile.NamedTemporaryFile("w", delete=False)
+    json.dump(model_to_json(model), tmp)
+    return File(tmp.name)
 
 
 def _get_residuals(fcst: pd.DataFrame, y: pd.Series):
@@ -280,35 +309,6 @@ def create_residual_diagnostics_plots(
     return plots
 
 
-def create_serialized_model(model: Prophet) -> File:
-    """Serialize the Prophet model
-
-    Args:
-        model (:obj:`Prophet`):
-            | Fitted Prophet model object
-
-    Returns:
-        ``File`` containing the model.
-
-    Examples:
-        .. code:: python3
-
-            from prophet import Prophet
-            import neptune.new as neptune
-
-            neptune.init(project='my_workspace/my_project')
-            model = Prophet()
-            model.fit(dataset)
-
-            run["model"] = create_serialized_model(model)
-    """
-
-    # create a temporary file and return File field with serialized model
-    tmp = tempfile.NamedTemporaryFile("w", delete=False)
-    json.dump(model_to_json(model), tmp)
-    return File(tmp.name)
-
-
 # TODO: describe better the fcst and df arguments
 # TODO: do we need to support fcst & df ?
 def create_summary(
@@ -362,7 +362,7 @@ def create_summary(
 
     prophet_summary["model"] = {
         "model_config": get_model_config(model),
-        "serialized_model": create_serialized_model(model),
+        "serialized_model": get_serialized_model(model),
     }
 
     prophet_summary["dataframes"] = {"forecast": _get_dataframe(fcst, nrows=nrows)}

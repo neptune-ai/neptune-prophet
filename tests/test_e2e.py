@@ -31,7 +31,7 @@ def test_e2e(dataset, log_interactive):
     forecast = model.predict(future)
 
     run["model"] = get_model_config(model)
-    run["serialized_model"] = create_serialized_model(model)
+    run["serialized_model"] = get_serialized_model(model)
 
     run["forecast_plots"] = create_forecast_plots(
         model,
