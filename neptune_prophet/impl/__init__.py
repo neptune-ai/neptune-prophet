@@ -58,26 +58,21 @@ def _get_figure(figsize=(20, 10)):
 
 
 def get_model_config(model: Prophet) -> Dict[str, Any]:
-    """Extract configuration from the Prophet model
+    """Extracts the configuration from the Prophet model.
 
     Args:
-        model (:obj:`Prophet`):
-            | Fitted Prophet model object.
+        model: Fitted Prophet model object.
 
     Returns:
-        ``dict`` with all summary items.
+        Dictionary with all summary items.
 
     Examples:
-        .. code:: python3
-
-            from prophet import Prophet
-            import neptune.new as neptune
-
-            neptune.init(project='my_workspace/my_project')
-            model = Prophet()
-            model.fit(dataset)
-
-            run["model_config"] = get_model_config(model)
+        from prophet import Prophet
+        import neptune.new as neptune
+        neptune.init_run()
+        model = Prophet()
+        model.fit(dataset)
+        run["model_config"] = get_model_config(model)
     """
     config = model.__dict__
     model.history_dates = pd.DataFrame(model.history_dates)
@@ -99,26 +94,21 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
 
 
 def get_serialized_model(model: Prophet) -> File:
-    """Serialize the Prophet model
+    """Serializes the Prophet model.
 
     Args:
-        model (:obj:`Prophet`):
-            | Fitted Prophet model object.
+        model: Fitted Prophet model object.
 
     Returns:
-        ``File`` containing the model.
+        File containing the model.
 
     Examples:
-        .. code:: python3
-
-            from prophet import Prophet
-            import neptune.new as neptune
-
-            neptune.init(project='my_workspace/my_project')
-            model = Prophet()
-            model.fit(dataset)
-
-            run["model"] = get_serialized_model(model)
+        from prophet import Prophet
+        import neptune.new as neptune
+        neptune.init_run()
+        model = Prophet()
+        model.fit(dataset)
+        run["model"] = get_serialized_model(model)
     """
 
     # create a temporary file and return File field with serialized model
@@ -129,7 +119,7 @@ def get_serialized_model(model: Prophet) -> File:
 
 def _get_residuals(fcst: pd.DataFrame, y: pd.Series):
     if len(fcst.yhat) != len(y):
-        raise ValueError("Lenghts of the true and the predicted series do not match")
+        raise ValueError("The lenghts of the true series and predicted series do not match.")
 
     return stats.zscore(
         y - fcst.yhat,
@@ -162,40 +152,33 @@ def create_forecast_plots(
     fcst: pd.DataFrame,
     log_interactive: bool = True,
 ) -> Dict[str, Any]:
-    """Prepare the Prophet plots to be saved to Neptune
+    """Prepares the Prophet plots to be saved to Neptune.
 
     Args:
-        model (:obj:`Prophet`):
-            | Fitted Prophet model object.
-        fcst (:obj:`pd.DataFrame`):
-            | Forecast returned by Prophet.
-        log_interactive (:obj:`bool`):
-            | Save the plots as interactive, HTML files.
+        model: Fitted Prophet model object.
+        fcst: Forecast returned by Prophet, as pandas DataFrame.
+        log_interactive: Save the plots as interactive HTML files.
 
     Returns:
-        ``dict`` with all the plots.
+        Dictionary with all the plots.
 
     Examples:
-        .. code:: python3
-
-            from prophet import Prophet
-            import neptune.new as neptune
-
-            neptune.init(project='my_workspace/my_project')
-            model = Prophet()
-            model.fit(dataset)
-
-            run["forecast_plots"] = create_forecast_plots(model)
+        from prophet import Prophet
+        import neptune.new as neptune
+        neptune.init_run()
+        model = Prophet()
+        model.fit(dataset)
+        run["forecast_plots"] = create_forecast_plots(model)
     """
 
     if log_interactive:
         try:
             import plotly
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("plotly is needed for log_interactive to work")
+            raise ModuleNotFoundError("Plotly is needed for log_interactive to work.")
 
     if not _is_fcst(fcst):
-        raise ValueError("fcst is not valid a Prophet forecast")
+        raise ValueError("fcst is not valid a Prophet forecast.")
 
     forecast_plots = dict()
 
@@ -244,42 +227,34 @@ def create_residual_diagnostics_plots(
     log_interactive: bool = True,
     alpha: float = 0.7,
 ) -> Dict[str, Any]:
-    """Prepare additional diagnostic plots to be saved to Neptune
+    """Prepares additional diagnostic plots to be saved to Neptune.
 
     Args:
-        fcst (:obj:`pd.DataFrame`):
-            | Forecast returned by Prophet.
-        y (:obj:`pd.Series`):
-            | The true values that were predicted.
-        log_interactive (:obj:`bool`):
-            | Save the plots as interactive, HTML files.
-        alpha (:obj:`float`):
-            | Transparency level of the plots.
+        fcst: Forecast returned by Prophet.
+        y: True values that were predicted.
+        log_interactive: Save the plots as interactive HTML files.
+        alpha: Transparency level of the plots.
 
     Returns:
-        ``dict`` with all the plots.
+        Dictionary with all the plots.
 
     Examples:
-        .. code:: python3
-
-            from prophet import Prophet
-            import neptune.new as neptune
-
-            neptune.init(project='my_workspace/my_project')
-            model = Prophet()
-            model.fit(dataset)
-
-            run["residual_diagnostics_plot"] = create_residual_diagnostics_plots(model)
+        from prophet import Prophet
+        import neptune.new as neptune
+        neptune.init_run()
+        model = Prophet()
+        model.fit(dataset)
+        run["residual_diagnostics_plot"] = create_residual_diagnostics_plots(model)
     """
 
     if log_interactive:
         try:
             import plotly
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("plotly is needed for log_interactive to work")
+            raise ModuleNotFoundError("Plotly is needed for log_interactive to work.")
 
     if not _is_fcst(fcst):
-        raise ValueError("fcst is not valid a Prophet forecast")
+        raise ValueError("fcst is not valid a Prophet forecast.")
 
     residuals = _get_residuals(fcst, y)
     plots = dict()
@@ -342,43 +317,35 @@ def create_summary(
     log_interactive: bool = True,
     nrows: int = 1000,
 ) -> Dict[str, Any]:
-    """Prepare additional diagnostic plots to be saved to Neptune
+    """Prepares additional diagnostic plots to be saved to Neptune.
 
     Args:
-        model (:obj:`Prophet`):
-            | Fitted Prophet model object.
-        df (:obj:`pd.DataFrame`):
-            | The dataset that was used for making the forecast. If provided, additional plots would be recorded.
-        fcst (:obj:`pd.DataFrame`):
-            | Forecast returned by Prophet. If not provided, will be calculated using the df data.
-        log_charts (:obj:`bool`):
-            | Aditionally, save the diagnostic plots.
-        log_interactive (:obj:`bool`):
-            | Save the plots as interactive, HTML files.
-        nrows (:obj:`int`):
-            | Number of rows the dataset should be downsampled to.
+        model: Fitted Prophet model object.
+        df: The dataset that was used for making the forecast.
+            If provided, additional plots will be recorded.
+        fcst: Forecast returned by Prophet.
+            If not provided, it'll be calculated using the df data.
+        log_charts: Aditionally save the diagnostic plots.
+        log_interactive: Save the plots as interactive HTML files.
+        nrows: Number of rows the dataset should be downsampled to.
 
     Returns:
-        ``dict`` with all the plots.
+        Dictionary with all the plots.
 
     Examples:
-        .. code:: python3
-
-            from prophet import Prophet
-            import neptune.new as neptune
-
-            neptune.init(project='my_workspace/my_project')
-            model = Prophet()
-            model.fit(dataset)
-
-            run["summary"] = create_summary(model)
+        from prophet import Prophet
+        import neptune.new as neptune
+        neptune.init_run()
+        model = Prophet()
+        model.fit(dataset)
+        run["summary"] = create_summary(model)
     """
 
     if log_interactive:
         try:
             import plotly
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("plotly is needed for log_interactive to work")
+            raise ModuleNotFoundError("Plotly is needed for log_interactive to wor.k")
 
     alpha = 0.7
     prophet_summary = dict()
@@ -396,10 +363,10 @@ def create_summary(
         if fcst is None:
             fcst = model.predict(fcst)
         elif not _is_fcst(fcst):
-            raise ValueError("fcst is not valid a Prophet forecast")
+            raise ValueError("fcst is not valid a Prophet forecast.")
 
         if len(fcst.yhat) != len(df.y):
-            raise RuntimeError("Lenghts of the true and the forecast do not match")
+            raise RuntimeError("The lenghts of the true series and forecast series do not match.")
 
         if log_charts:
             prophet_summary["diagnostics_charts"] = {
