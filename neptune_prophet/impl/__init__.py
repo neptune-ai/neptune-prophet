@@ -345,7 +345,7 @@ def create_summary(
         try:
             import plotly
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("Plotly is needed for log_interactive to wor.k")
+            raise ModuleNotFoundError("Plotly is needed for log_interactive to work.")
 
     alpha = 0.7
     prophet_summary = dict()
