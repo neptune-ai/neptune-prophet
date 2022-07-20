@@ -20,6 +20,7 @@ __all__ = [
     "create_forecast_plots",
     "create_residual_diagnostics_plots",
     "create_summary",
+    "__version__",
 ]
 
 import tempfile
