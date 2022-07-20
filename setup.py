@@ -17,7 +17,7 @@ def main():
     extras["all"] = all_deps
 
     base_libs = [
-        "matplotlib",
+        "matplotlib>=3.4.1, <=3.4.3",
         "neptune-client>=0.10.0",
         "numpy",
         "pandas",
