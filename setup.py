@@ -18,7 +18,7 @@ def main():
 
     base_libs = [
         "matplotlib>=3.4.1, <=3.4.3",
-        "neptune-client>=0.10.0",
+        "neptune-client>=0.15.0",
         "numpy",
         "pandas",
         "prophet>=1.0",
