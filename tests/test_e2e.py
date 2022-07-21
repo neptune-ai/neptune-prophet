@@ -30,10 +30,10 @@ def test_e2e(dataset, log_interactive):
     future = model.make_future_dataframe(periods=365)
     forecast = model.predict(future)
 
-    run["model"] = get_model_config(model)
-    run["serialized_model"] = get_serialized_model(model)
+    run["artifacts/model"] = get_model_config(model)
+    run["artifacts/serialized_model"] = get_serialized_model(model)
 
-    run["forecast_plots"] = create_forecast_plots(
+    run["artifacts/forecast_plots"] = create_forecast_plots(
         model,
         forecast,
         log_interactive=log_interactive,
@@ -41,13 +41,13 @@ def test_e2e(dataset, log_interactive):
 
     predicted = model.predict(dataset)
 
-    run["residual_diagnostics"] = create_residual_diagnostics_plots(
+    run["artifacts/residual_diagnostics"] = create_residual_diagnostics_plots(
         predicted,
         dataset.y,
         log_interactive=log_interactive,
     )
 
-    run["summary"] = create_summary(
+    run["artifacts/summary"] = create_summary(
         model,
         df=dataset,
         fcst=predicted,
