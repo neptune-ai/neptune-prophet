@@ -68,11 +68,17 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
         Dictionary with all summary items.
 
     Examples:
+        import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
+
         neptune.init_run()
+
+        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+
         model = Prophet()
         model.fit(dataset)
+
         run["model_config"] = get_model_config(model)
     """
     config = model.__dict__
@@ -104,11 +110,17 @@ def get_serialized_model(model: Prophet) -> File:
         File containing the model.
 
     Examples:
+        import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
+
         neptune.init_run()
+
+        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+
         model = Prophet()
         model.fit(dataset)
+
         run["model"] = get_serialized_model(model)
     """
 
@@ -157,12 +169,18 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> List[str]:
         Dictionary with all the plots.
 
     Examples:
+        import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
+
         neptune.init_run()
+
+        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+
         model = Prophet()
         model.fit(dataset)
         predicted = model.predict(dataset)
+
         run["forecast_components"] = get_forecast_components(model, predicted)
     """
     forecast_components = dict()
@@ -194,12 +212,18 @@ def create_forecast_plots(
         Dictionary with all the plots.
 
     Examples:
+        import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
+
         neptune.init_run()
+
+        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+
         model = Prophet()
         model.fit(dataset)
         predicted = model.predict(dataset)
+
         run["forecast_plots"] = create_forecast_plots(model, predicted)
     """
 
@@ -265,12 +289,18 @@ def create_residual_diagnostics_plots(
         Dictionary with all the plots.
 
     Examples:
+        import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
+
         neptune.init_run()
+
+        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+
         model = Prophet()
         model.fit(dataset)
         predicted = model.predict(dataset)
+
         run["residual_diagnostics_plot"] = create_residual_diagnostics_plots(predicted, dataset.y)
     """
 
@@ -360,11 +390,17 @@ def create_summary(
         Dictionary with all the plots.
 
     Examples:
+        import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
+
         neptune.init_run()
+
+        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+
         model = Prophet()
         model.fit(dataset)
+
         run["summary"] = create_summary(model, dataset)
     """
 
