@@ -15,12 +15,12 @@
 #
 
 __all__ = [
-    "get_model_config",
-    "get_serialized_model",
     "create_forecast_plots",
     "create_residual_diagnostics_plots",
     "create_summary",
-    "__version__",
+    "get_forecast_components",
+    "get_model_config",
+    "get_serialized_model",
 ]
 
 import tempfile
@@ -120,7 +120,9 @@ def get_serialized_model(model: Prophet) -> File:
 
 def _get_residuals(fcst: pd.DataFrame, y: pd.Series):
     if len(fcst.yhat) != len(y):
-        raise ValueError("The lenghts of the true series and predicted series do not match.")
+        raise ValueError(
+            "The lenghts of the true series and predicted series do not match."
+        )
 
     return stats.zscore(
         y - fcst.yhat,
@@ -134,14 +136,42 @@ def _is_fcst(obj: Any) -> bool:
     return "yhat" in obj.columns
 
 
-def _extract_forecast_components(model: Prophet, fcst: pd.DataFrame) -> List[str]:
+def _forecast_component_names(model: Prophet, fcst: pd.DataFrame) -> List[str]:
     # it is the same code as in Prophet, but simplified:
     # https://github.com/facebook/prophet/blob/ba9a5a2c6e2400206017a5ddfd71f5042da9f65b/python/prophet/plot.py#L127-L140
-    components = ["trend"]
+    components = ["yhat", "yhat_lower", "yhat_upper", "trend"]
     if model.train_holiday_names is not None and "holidays" in fcst:
         components.append("holidays")
     components.extend([name for name in sorted(model.seasonalities) if name in fcst])
     return components
+
+
+def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> List[str]:
+    """Get the Prophet forecast components to be saved to Neptune.
+
+    Args:
+        model: Fitted Prophet model object.
+        fcst: Forecast returned by Prophet, as pandas DataFrame.
+
+    Returns:
+        Dictionary with all the plots.
+
+    Examples:
+        from prophet import Prophet
+        import neptune.new as neptune
+        neptune.init_run()
+        model = Prophet()
+        model.fit(dataset)
+        predicted = model.predict(dataset)
+        run["forecast_components"] = get_forecast_components(model, predicted)
+    """
+    forecast_components = dict()
+
+    for column in _forecast_component_names(model, fcst):
+        values = fcst.loc[:, column].tolist()
+        forecast_components[column] = FloatSeries(values)
+
+    return forecast_components
 
 
 def _get_dataframe(df: pd.DataFrame, nrows: int = 1000) -> File:
@@ -169,7 +199,8 @@ def create_forecast_plots(
         neptune.init_run()
         model = Prophet()
         model.fit(dataset)
-        run["forecast_plots"] = create_forecast_plots(model)
+        predicted = model.predict(dataset)
+        run["forecast_plots"] = create_forecast_plots(model, predicted)
     """
 
     if log_interactive:
@@ -181,13 +212,7 @@ def create_forecast_plots(
     if not _is_fcst(fcst):
         raise ValueError("fcst is not valid a Prophet forecast.")
 
-    forecast_plots = dict()
-
-    for column in ["yhat", "yhat_lower", "yhat_upper"] + _extract_forecast_components(
-        model, fcst
-    ):
-        values = fcst.loc[:, column].tolist()
-        forecast_plots[column] = FloatSeries(values)
+    forecast_plots = get_forecast_components(model, fcst)
 
     if log_interactive:
         fig1 = plot_plotly(model, fcst)
@@ -245,7 +270,8 @@ def create_residual_diagnostics_plots(
         neptune.init_run()
         model = Prophet()
         model.fit(dataset)
-        run["residual_diagnostics_plot"] = create_residual_diagnostics_plots(model)
+        predicted = model.predict(dataset)
+        run["residual_diagnostics_plot"] = create_residual_diagnostics_plots(predicted, dataset.y)
     """
 
     if log_interactive:
@@ -339,7 +365,7 @@ def create_summary(
         neptune.init_run()
         model = Prophet()
         model.fit(dataset)
-        run["summary"] = create_summary(model)
+        run["summary"] = create_summary(model, dataset)
     """
 
     if log_interactive:
@@ -367,7 +393,9 @@ def create_summary(
             raise ValueError("fcst is not valid a Prophet forecast.")
 
         if len(fcst.yhat) != len(df.y):
-            raise RuntimeError("The lenghts of the true series and forecast series do not match.")
+            raise RuntimeError(
+                "The lenghts of the true series and forecast series do not match."
+            )
 
         if log_charts:
             prophet_summary["diagnostics_charts"] = {

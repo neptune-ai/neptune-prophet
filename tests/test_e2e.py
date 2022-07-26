@@ -33,6 +33,8 @@ def test_e2e(dataset, log_interactive):
     run["artifacts/model"] = get_model_config(model)
     run["artifacts/serialized_model"] = get_serialized_model(model)
 
+    run["artifacts/forecast_components"] = get_forecast_components(model, forecast)
+
     run["artifacts/forecast_plots"] = create_forecast_plots(
         model,
         forecast,
