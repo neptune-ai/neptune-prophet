@@ -194,6 +194,13 @@ def _get_dataframe(df: pd.DataFrame) -> File:
     return File.as_html(df)
 
 
+def _fail_if_plotly_is_unavailable():
+    try:
+        import plotly
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError("Plotly is needed for log_interactive to work.")
+
+
 def create_forecast_plots(
     model: Prophet,
     fcst: pd.DataFrame,
@@ -226,10 +233,7 @@ def create_forecast_plots(
     """
 
     if log_interactive:
-        try:
-            import plotly
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError("Plotly is needed for log_interactive to work.")
+        _fail_if_plotly_is_unavailable()
 
     if not _is_fcst(fcst):
         raise ValueError("fcst is not valid a Prophet forecast.")
@@ -299,10 +303,7 @@ def create_residual_diagnostics_plots(
     """
 
     if log_interactive:
-        try:
-            import plotly
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError("Plotly is needed for log_interactive to work.")
+        _fail_if_plotly_is_unavailable()
 
     if not _is_fcst(fcst):
         raise ValueError("fcst is not valid a Prophet forecast.")
@@ -397,10 +398,7 @@ def create_summary(
     """
 
     if log_interactive:
-        try:
-            import plotly
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError("Plotly is needed for log_interactive to work.")
+        _fail_if_plotly_is_unavailable()
 
     alpha = 0.7
     prophet_summary = dict()
