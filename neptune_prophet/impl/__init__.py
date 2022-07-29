@@ -192,8 +192,8 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> List[str]:
     return forecast_components
 
 
-def _get_dataframe(df: pd.DataFrame, nrows: int = 1000) -> File:
-    return File.as_html(df.head(n=nrows))
+def _get_dataframe(df: pd.DataFrame) -> File:
+    return File.as_html(df)
 
 
 def create_forecast_plots(
@@ -372,7 +372,6 @@ def create_summary(
     fcst: Optional[pd.DataFrame] = None,
     log_charts: bool = True,
     log_interactive: bool = True,
-    nrows: int = 1000,
 ) -> Dict[str, Any]:
     """Prepares additional diagnostic plots to be saved to Neptune.
 
@@ -384,7 +383,6 @@ def create_summary(
             If not provided, it'll be calculated using the df data.
         log_charts: Aditionally save the diagnostic plots.
         log_interactive: Save the plots as interactive HTML files.
-        nrows: Number of rows the dataset should be downsampled to.
 
     Returns:
         Dictionary with all the plots.
@@ -418,7 +416,7 @@ def create_summary(
         "serialized_model": get_serialized_model(model),
     }
 
-    prophet_summary["dataframes"] = {"forecast": _get_dataframe(fcst, nrows=nrows)}
+    prophet_summary["dataframes"] = {"forecast": _get_dataframe(fcst)}
 
     if df is not None:
         prophet_summary[f"dataframes"]["df"] = File.as_html(df)
