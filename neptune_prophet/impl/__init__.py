@@ -24,7 +24,6 @@ __all__ = [
 ]
 
 import tempfile
-
 from typing import Any, Dict, List, Optional
 
 try:
@@ -40,17 +39,18 @@ from neptune_prophet import __version__
 
 INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-prophet"
 
-from prophet import Prophet
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-from scipy import stats
-from prophet.plot import plot_plotly, plot_components_plotly
-from prophet.plot import add_changepoints_to_plot
-from prophet.serialize import model_to_json
 import json
 import tempfile
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+from scipy import stats
+
+from prophet import Prophet
+from prophet.plot import add_changepoints_to_plot, plot_components_plotly, plot_plotly
+from prophet.serialize import model_to_json
 
 
 def _get_figure(figsize=(20, 10)):
@@ -132,9 +132,7 @@ def get_serialized_model(model: Prophet) -> File:
 
 def _get_residuals(fcst: pd.DataFrame, y: pd.Series):
     if len(fcst.yhat) != len(y):
-        raise ValueError(
-            "The lenghts of the true series and predicted series do not match."
-        )
+        raise ValueError("The lenghts of the true series and predicted series do not match.")
 
     return stats.zscore(
         y - fcst.yhat,
@@ -158,7 +156,7 @@ def _forecast_component_names(model: Prophet, fcst: pd.DataFrame) -> List[str]:
     return components
 
 
-def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> List[str]:
+def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any]:
     """Get the Prophet forecast components to be saved to Neptune.
 
     Args:
@@ -248,9 +246,7 @@ def create_forecast_plots(
 
             fig3 = model.plot(fcst)
             changepoint_fig = add_changepoints_to_plot(fig3.gca(), model, fcst)
-            forecast_plots["forecast_changepoints"] = File.as_image(
-                changepoint_fig[-1].figure
-            )
+            forecast_plots["forecast_changepoints"] = File.as_image(changepoint_fig[-1].figure)
             plt.close(fig3)
         return forecast_plots
     else:
@@ -263,9 +259,7 @@ def create_forecast_plots(
             forecast_plots["forecast_components"] = File.as_image(fig2)
 
             changepoint_fig = add_changepoints_to_plot(fig1.gca(), model, fcst)
-            forecast_plots["forecast_changepoints"] = File.as_image(
-                changepoint_fig[-1].figure
-            )
+            forecast_plots["forecast_changepoints"] = File.as_image(changepoint_fig[-1].figure)
             plt.close(fig2)
 
         return forecast_plots
@@ -427,9 +421,7 @@ def create_summary(
             raise ValueError("fcst is not valid a Prophet forecast.")
 
         if len(fcst.yhat) != len(df.y):
-            raise RuntimeError(
-                "The lenghts of the true series and forecast series do not match."
-            )
+            raise RuntimeError("The lenghts of the true series and forecast series do not match.")
 
         if log_charts:
             prophet_summary["diagnostics_charts"] = {
