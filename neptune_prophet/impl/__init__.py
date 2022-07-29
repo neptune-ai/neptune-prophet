@@ -24,7 +24,7 @@ __all__ = [
 ]
 
 import tempfile
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     # neptune-client=0.9.0+ package structure
@@ -53,7 +53,7 @@ from prophet.plot import add_changepoints_to_plot, plot_components_plotly, plot_
 from prophet.serialize import model_to_json
 
 
-def _get_figure(figsize=(20, 10)):
+def _get_figure(figsize=(20, 10)) -> Tuple[plt.Figure, plt.Axes]:
     fig, ax = plt.subplots(1, figsize=figsize)
     return fig, ax
 
@@ -130,7 +130,7 @@ def get_serialized_model(model: Prophet) -> File:
     return File(tmp.name)
 
 
-def _get_residuals(fcst: pd.DataFrame, y: pd.Series):
+def _get_residuals(fcst: pd.DataFrame, y: pd.Series) -> pd.Series:
     if len(fcst.yhat) != len(y):
         raise ValueError("The lenghts of the true series and predicted series do not match.")
 
