@@ -1,6 +1,7 @@
 import pytest
-from prophet import Prophet
+
 from neptune_prophet.impl import *
+from prophet import Prophet
 
 try:
     # neptune-client=0.9.0+ package structure
