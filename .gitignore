@@ -1,5 +1,5 @@
 # Neptune data
-.neptune/
+.neptune
 tests/.neptune/
 tests/neptune/.neptune/
 

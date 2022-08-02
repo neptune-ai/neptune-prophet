@@ -140,10 +140,9 @@ def _get_residuals(fcst: pd.DataFrame, y: pd.Series) -> pd.Series:
     )
 
 
-def _is_fcst(obj: Any) -> bool:
-    if not isinstance(obj, pd.DataFrame):
-        return False
-    return "yhat" in obj.columns
+def _fail_if_invalid_fcst(obj: Any):
+    if not isinstance(obj, pd.DataFrame) or "yhat" not in obj.columns:
+        raise ValueError("fcst is not valid a Prophet forecast.")
 
 
 def _forecast_component_names(model: Prophet, fcst: pd.DataFrame) -> List[str]:
@@ -235,8 +234,7 @@ def create_forecast_plots(
     if log_interactive:
         _fail_if_plotly_is_unavailable()
 
-    if not _is_fcst(fcst):
-        raise ValueError("fcst is not valid a Prophet forecast.")
+    _fail_if_invalid_fcst(fcst)
 
     forecast_plots = get_forecast_components(model, fcst)
 
@@ -305,8 +303,7 @@ def create_residual_diagnostics_plots(
     if log_interactive:
         _fail_if_plotly_is_unavailable()
 
-    if not _is_fcst(fcst):
-        raise ValueError("fcst is not valid a Prophet forecast.")
+    _fail_if_invalid_fcst(fcst)
 
     residuals = _get_residuals(fcst, y)
     plots = dict()
@@ -400,7 +397,6 @@ def create_summary(
     if log_interactive:
         _fail_if_plotly_is_unavailable()
 
-    alpha = 0.7
     prophet_summary = dict()
 
     prophet_summary["model"] = {
@@ -411,12 +407,12 @@ def create_summary(
     prophet_summary["dataframes"] = {"forecast": _get_dataframe(fcst)}
 
     if df is not None:
-        prophet_summary[f"dataframes"]["df"] = File.as_html(df)
+        prophet_summary["dataframes"]["df"] = File.as_html(df)
 
         if fcst is None:
             fcst = model.predict(fcst)
-        elif not _is_fcst(fcst):
-            raise ValueError("fcst is not valid a Prophet forecast.")
+        else:
+            _fail_if_invalid_fcst(fcst)
 
         if len(fcst.yhat) != len(df.y):
             raise RuntimeError("The lenghts of the true series and forecast series do not match.")
@@ -427,14 +423,12 @@ def create_summary(
                     fcst,
                     df.y,
                     log_interactive=log_interactive,
-                    alpha=alpha,
                 ),
                 **create_forecast_plots(model, fcst, log_interactive=log_interactive),
             }
-    else:
-        if log_charts:
-            prophet_summary["diagnostics_charts"] = {
-                **create_forecast_plots(model, fcst, log_interactive=log_interactive)
-            }
+    elif log_charts:
+        prophet_summary["diagnostics_charts"] = create_forecast_plots(
+            model, fcst, log_interactive=log_interactive
+        )
 
     return prophet_summary
