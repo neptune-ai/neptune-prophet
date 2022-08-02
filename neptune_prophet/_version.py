@@ -44,7 +44,7 @@ def get_config():
     cfg.style = "pep440"
     cfg.tag_prefix = ""
     cfg.parentdir_prefix = ""
-    cfg.versionfile_source = "kedro_neptune/_version.py"
+    cfg.versionfile_source = "neptune_prophet/_version.py"
     cfg.verbose = False
     return cfg
 
