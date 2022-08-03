@@ -35,10 +35,6 @@ except ImportError:
     import neptune
     from neptune.types import File, FloatSeries
 
-from neptune_prophet import __version__
-
-INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-prophet"
-
 import json
 import tempfile
 
@@ -48,9 +44,12 @@ import pandas as pd
 import statsmodels.api as sm
 from scipy import stats
 
+from neptune_prophet import __version__
 from prophet import Prophet
 from prophet.plot import add_changepoints_to_plot, plot_components_plotly, plot_plotly
 from prophet.serialize import model_to_json
+
+INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-prophet"
 
 
 def _get_figure(figsize=(20, 10)) -> Tuple[plt.Figure, plt.Axes]:
@@ -81,21 +80,19 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
 
         run["model_config"] = get_model_config(model)
     """
-    config = model.__dict__
-    model.history_dates = pd.DataFrame(model.history_dates)
 
     model_config = dict()
-    for key, value in config.items():
+    for key, value in model.__dict__.items():
         if key == "trend":
             continue
         elif isinstance(value, pd.DataFrame):
-            model_config[f"{key}"] = File.as_html(value)
-        elif isinstance(value, np.ndarray):
-            model_config[f"{key}"] = File.as_html(pd.DataFrame(value))
-        elif isinstance(value, pd.Series):
+            model_config[str(key)] = File.as_html(value)
+        elif isinstance(value, (pd.Series, pd.Series)):
             model_config[f"{key}"] = File.as_html(pd.DataFrame(value))
         else:
             model_config[f"{key}"] = value
+
+        model_config["history_dates"] = pd.DataFrame(model.history_dates)
 
     return model_config
 
@@ -182,15 +179,11 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any
     """
     forecast_components = dict()
 
-    for column in _forecast_component_names(model, fcst):
-        values = fcst.loc[:, column].tolist()
-        forecast_components[column] = FloatSeries(values)
+    for column_name in _forecast_component_names(model, fcst):
+        values = fcst.loc[:, column_name].tolist()
+        forecast_components[column_name] = FloatSeries(values)
 
     return forecast_components
-
-
-def _get_dataframe(df: pd.DataFrame) -> File:
-    return File.as_html(df)
 
 
 def _fail_if_plotly_is_unavailable():
@@ -306,56 +299,79 @@ def create_residual_diagnostics_plots(
     _fail_if_invalid_fcst(fcst)
 
     residuals = _get_residuals(fcst, y)
-    plots = dict()
 
+    fig1 = _qq_plot(residuals)
+    fig2 = _errors_histogram(residuals)
+    fig3 = _actual_vs_normalized_errors_plot(y, alpha, residuals)
+    fig4 = _acf_plot(residuals)
+    fig5 = _normalized_errors_plot(fcst, residuals, alpha)
+
+    plots = dict()
+    plots["histogram"] = File.as_image(fig2)
+    plots["acf"] = File.as_image(fig4)
+
+    plots["qq_plot"] = _get_plot(fig1, log_interactive)
+    plots["actual_vs_normalized_errors"] = _get_plot(fig3, log_interactive)
+    plots["ds_vs_normalized_errors"] = _get_plot(fig5, log_interactive)
+
+    _close_figs(fig1, fig2, fig3, fig4, fig5)
+
+    return plots
+
+
+def _qq_plot(residuals):
     fig1, ax1 = _get_figure()
     sm.qqplot(residuals, line="45", ax=ax1)
     ax1.set_title("Q-Q plot of normalized errors")
+    return fig1
 
+
+def _errors_histogram(residuals):
     fig2, ax2 = _get_figure()
     ax2.hist(residuals, bins="auto")
     ax2.set_xlabel("Normalized errors")
     ax2.set_title("Histogram of normalized errors")
+    return fig2
 
+
+def _actual_vs_normalized_errors_plot(y, alpha, residuals):
     fig3, ax3 = _get_figure()
     ax3.scatter(y, residuals, alpha=alpha)
     ax3.set_title("Actual vs Normalized errors")
     ax3.set_ylabel("Normalized errors")
     ax3.set_xlabel("y")
+    return fig3
 
-    fig4, ax4 = _get_figure()
+
+def _acf_plot(residuals):
+    fig, ax = _get_figure()
     sm.graphics.tsa.plot_acf(
         residuals,
         auto_ylims=True,
-        ax=ax4,
+        ax=ax,
         title="ACF of normalized errors",
     )
+    return fig
 
-    fig5, ax5 = _get_figure()
-    ax5.scatter(fcst["ds"], residuals, alpha=alpha)
-    ax5.set_ylabel("Normalized errors")
-    ax5.set_xlabel("Dates")
-    ax5.set_title("DS vs Normalized errors")
 
-    plots["histogram"] = File.as_image(fig2)
-    plots["acf"] = File.as_image(fig4)
-
+def _get_plot(fig, log_interactive) -> File:
     if log_interactive:
-        plots["qq_plot"] = File.as_html(fig1)
-        plots["actual_vs_normalized_errors"] = File.as_html(fig3)
-        plots["ds_vs_normalized_errors"] = File.as_html(fig5)
-    else:
-        plots["qq_plot"] = File.as_image(fig1)
-        plots["actual_vs_normalized_errors"] = File.as_image(fig3)
-        plots["ds_vs_normalized_errors"] = File.as_image(fig5)
+        return File.as_html(fig)
+    return File.as_image(fig)
 
-    plt.close(fig1)
-    plt.close(fig2)
-    plt.close(fig3)
-    plt.close(fig4)
-    plt.close(fig5)
 
-    return plots
+def _close_figs(*args):
+    for fig in args:
+        plt.close(fig)
+
+
+def _normalized_errors_plot(fcst, residuals, alpha):
+    fig, ax = _get_figure()
+    ax.scatter(fcst["ds"], residuals, alpha=alpha)
+    ax.set_ylabel("Normalized errors")
+    ax.set_xlabel("Dates")
+    ax.set_title("DS vs Normalized errors")
+    return fig
 
 
 def create_summary(
@@ -404,7 +420,7 @@ def create_summary(
         "serialized_model": get_serialized_model(model),
     }
 
-    prophet_summary["dataframes"] = {"forecast": _get_dataframe(fcst)}
+    prophet_summary["dataframes"] = {"forecast": File.as_html(fcst)}
 
     if df is not None:
         prophet_summary["dataframes"]["df"] = File.as_html(df)
