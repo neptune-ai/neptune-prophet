@@ -12,7 +12,7 @@ except ImportError:
 
 
 @pytest.mark.parametrize("log_interactive", [False, True])
-def test_e2e(dataset, log_interactive):
+def test_e2e(dataset, model, log_interactive):
 
     if log_interactive:
         try:
@@ -24,9 +24,6 @@ def test_e2e(dataset, log_interactive):
         project="common/fbprophet-integration",
         api_token="ANONYMOUS",
     )
-
-    model = Prophet()
-    model.fit(dataset)
 
     future = model.make_future_dataframe(periods=365)
     forecast = model.predict(future)
