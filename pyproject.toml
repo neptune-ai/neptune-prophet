@@ -56,7 +56,7 @@ fail-under = 10
 # from-stdin =
 
 # Files or directories to be skipped. They should be base names, not paths.
-ignore = ["CVS", "neptune/vendor"]
+ignore = ["CVS", "neptune/vendor", "versioneer.py", "setup.py"]
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths and can be in Posix or Windows format.
@@ -408,7 +408,7 @@ evaluation = "10.0 - ((float(5 * error + warning + refactor + convention) / stat
 # Set the output format. Available formats are text, parseable, colorized, json
 # and msvs (visual studio). You can also give a reporter class, e.g.
 # mypackage.mymodule.MyReporterClass.
-# output-format =
+output-format = "colorized"
 
 # Tells whether to display a full report or only the messages.
 # reports =
