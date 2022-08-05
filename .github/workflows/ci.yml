@@ -1,7 +1,7 @@
 name: neptune-prophet
 on: [push]
 jobs:
-  lint:
+  pre-commit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -11,9 +11,9 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -e .[dev]
-      - name: Lint
+      - name: Pre-commit
         run: |
-          python -m pylint -j 0 -f parseable neptune_prophet tests
+          pre-commit run --show-diff-on-failure --color=always
   test:
     runs-on: ${{ matrix.os }}
     strategy:

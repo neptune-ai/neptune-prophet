@@ -46,11 +46,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from scipy import stats
-
 from prophet import Prophet
 from prophet.plot import add_changepoints_to_plot, plot_components_plotly, plot_plotly
 from prophet.serialize import model_to_json
+from scipy import stats
 
 
 def _get_figure(figsize=(20, 10)) -> Tuple[plt.Figure, plt.Axes]:

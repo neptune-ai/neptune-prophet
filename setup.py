@@ -10,11 +10,10 @@ def main():
         readme = readme_file.read()
 
     extras = {
-        'dev': [
-            'pylint==2.9.6',
-            'pylintfileheader',
-            'pytest>=5.0',
-            'pytest-cov==2.10.1',
+        "dev": [
+            "pre-commit",
+            "pytest>=5.0",
+            "pytest-cov==2.10.1",
         ]
     }
 
