@@ -50,6 +50,82 @@ from prophet.serialize import model_to_json
 INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-prophet"
 
 
+def create_summary(
+    model: Prophet,
+    df: Optional[pd.DataFrame] = None,
+    fcst: Optional[pd.DataFrame] = None,
+    log_charts: bool = True,
+    log_interactive: bool = True,
+) -> Dict[str, Any]:
+    """Prepares additional diagnostic plots to be saved to Neptune.
+
+    Args:
+        model: Fitted Prophet model object.
+        df: The dataset that was used for making the forecast.
+            If provided, additional plots will be recorded.
+        fcst: Forecast returned by Prophet.
+            If not provided, it'll be calculated using the df data.
+        log_charts: Aditionally save the diagnostic plots.
+        log_interactive: Save the plots as interactive HTML files.
+
+    Returns:
+        Dictionary with all the plots.
+
+    Examples:
+        import pandas as pd
+        from prophet import Prophet
+        import neptune.new as neptune
+
+        neptune.init_run()
+
+        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+
+        model = Prophet()
+        model.fit(dataset)
+
+        run["summary"] = create_summary(model, dataset)
+    """
+
+    if log_interactive:
+        _fail_if_plotly_is_unavailable()
+
+    prophet_summary = dict()
+
+    prophet_summary["model"] = {
+        "model_config": get_model_config(model),
+        "serialized_model": get_serialized_model(model),
+    }
+
+    prophet_summary["dataframes"] = {"forecast": File.as_html(fcst)}
+
+    if df is not None:
+        prophet_summary["dataframes"]["df"] = File.as_html(df)
+
+        if fcst is None:
+            fcst = model.predict(fcst)
+        else:
+            _fail_if_invalid_fcst(fcst)
+
+        if len(fcst.yhat) != len(df.y):
+            raise RuntimeError("The lenghts of the true series and forecast series do not match.")
+
+        if log_charts:
+            prophet_summary["diagnostics_charts"] = {
+                "residuals_diagnostics_charts": create_residual_diagnostics_plots(
+                    fcst,
+                    df.y,
+                    log_interactive=log_interactive,
+                ),
+                **create_forecast_plots(model, fcst, log_interactive=log_interactive),
+            }
+    elif log_charts:
+        prophet_summary["diagnostics_charts"] = create_forecast_plots(
+            model, fcst, log_interactive=log_interactive
+        )
+
+    return prophet_summary
+
+
 def get_model_config(model: Prophet) -> Dict[str, Any]:
     """Extracts the configuration from the Prophet model.
 
@@ -80,10 +156,10 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
             continue
         elif isinstance(value, pd.DataFrame):
             model_config[str(key)] = File.as_html(value)
-        elif isinstance(value, (pd.Series, pd.Series)):
-            model_config[f"{key}"] = File.as_html(pd.DataFrame(value))
+        elif isinstance(value, (np.ndarray, pd.Series)):
+            model_config[str(key)] = File.as_html(pd.DataFrame(value))
         else:
-            model_config[f"{key}"] = value
+            model_config[str(key)] = value
 
         model_config["history_dates"] = pd.DataFrame(model.history_dates)
 
@@ -278,82 +354,6 @@ def create_residual_diagnostics_plots(
     _close_figs(fig1, fig2, fig3, fig4, fig5)
 
     return plots
-
-
-def create_summary(
-    model: Prophet,
-    df: Optional[pd.DataFrame] = None,
-    fcst: Optional[pd.DataFrame] = None,
-    log_charts: bool = True,
-    log_interactive: bool = True,
-) -> Dict[str, Any]:
-    """Prepares additional diagnostic plots to be saved to Neptune.
-
-    Args:
-        model: Fitted Prophet model object.
-        df: The dataset that was used for making the forecast.
-            If provided, additional plots will be recorded.
-        fcst: Forecast returned by Prophet.
-            If not provided, it'll be calculated using the df data.
-        log_charts: Aditionally save the diagnostic plots.
-        log_interactive: Save the plots as interactive HTML files.
-
-    Returns:
-        Dictionary with all the plots.
-
-    Examples:
-        import pandas as pd
-        from prophet import Prophet
-        import neptune.new as neptune
-
-        neptune.init_run()
-
-        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
-
-        model = Prophet()
-        model.fit(dataset)
-
-        run["summary"] = create_summary(model, dataset)
-    """
-
-    if log_interactive:
-        _fail_if_plotly_is_unavailable()
-
-    prophet_summary = dict()
-
-    prophet_summary["model"] = {
-        "model_config": get_model_config(model),
-        "serialized_model": get_serialized_model(model),
-    }
-
-    prophet_summary["dataframes"] = {"forecast": File.as_html(fcst)}
-
-    if df is not None:
-        prophet_summary["dataframes"]["df"] = File.as_html(df)
-
-        if fcst is None:
-            fcst = model.predict(fcst)
-        else:
-            _fail_if_invalid_fcst(fcst)
-
-        if len(fcst.yhat) != len(df.y):
-            raise RuntimeError("The lenghts of the true series and forecast series do not match.")
-
-        if log_charts:
-            prophet_summary["diagnostics_charts"] = {
-                "residuals_diagnostics_charts": create_residual_diagnostics_plots(
-                    fcst,
-                    df.y,
-                    log_interactive=log_interactive,
-                ),
-                **create_forecast_plots(model, fcst, log_interactive=log_interactive),
-            }
-    elif log_charts:
-        prophet_summary["diagnostics_charts"] = create_forecast_plots(
-            model, fcst, log_interactive=log_interactive
-        )
-
-    return prophet_summary
 
 
 def _get_residuals(fcst: pd.DataFrame, y: pd.Series) -> pd.Series:
