@@ -1,0 +1,2 @@
+include versioneer.py
+include neptune_prophet/_version.py
