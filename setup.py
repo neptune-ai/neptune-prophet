@@ -9,7 +9,13 @@ def main():
     with open("README.md") as readme_file:
         readme = readme_file.read()
 
-    extras = {}
+    extras = {
+        "dev": [
+            "pre-commit",
+            "pytest>=5.0",
+            "pytest-cov==2.10.1",
+        ]
+    }
 
     all_deps = []
     for group_name in extras:
