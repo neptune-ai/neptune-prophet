@@ -1,5 +1,5 @@
 [tool.black]
-line-length = 100
+line-length = 120
 target-version = ['py37', 'py38', 'py39', 'py310']
 include = '\.pyi?$'
 exclude = '''
@@ -15,7 +15,7 @@ exclude = '''
 
 [tool.isort]
 profile = "black"
-line_length = 100
+line_length = 120
 
 [tool.mypy]
 show_error_codes = true
@@ -60,7 +60,7 @@ ignore = ["CVS", "neptune/vendor", "versioneer.py", "setup.py"]
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths and can be in Posix or Windows format.
-# ignore-paths =
+ignore-paths = ["neptune_prophet/_version.py"]
 
 # Files or directories matching the regex patterns are skipped. The regex matches
 # against base names, not paths. The default value ignores Emacs file locks
@@ -302,7 +302,7 @@ indent-after-paren = 4
 indent-string = "    "
 
 # Maximum number of characters on a single line.
-max-line-length = 100
+max-line-length = 120
 
 # Maximum number of lines in a module.
 max-module-lines = 1000
@@ -369,7 +369,7 @@ confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFIN
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
-disable = ["import-error", "raw-checker-failed", "bad-inline-option", "locally-disabled", "file-ignored", "suppressed-message", "useless-suppression", "deprecated-pragma", "use-symbolic-message-instead", "useless-option-value", "no-classmethod-decorator", "no-staticmethod-decorator", "useless-object-inheritance", "property-with-parameters", "consider-using-from-import", "consider-merging-isinstance", "too-many-nested-blocks", "simplifiable-if-statement", "redefined-argument-from-local", "no-else-return", "consider-using-ternary", "trailing-comma-tuple", "stop-iteration-return", "simplify-boolean-expression", "inconsistent-return-statements", "useless-return", "consider-swap-variables", "consider-using-join", "consider-using-in", "consider-using-get", "chained-comparison", "consider-using-dict-comprehension", "consider-using-set-comprehension", "simplifiable-if-expression", "no-else-raise", "unnecessary-comprehension", "consider-using-sys-exit", "no-else-break", "no-else-continue", "super-with-arguments", "simplifiable-condition", "condition-evals-to-constant", "consider-using-generator", "use-a-generator", "consider-using-min-builtin", "consider-using-max-builtin", "consider-using-with", "unnecessary-dict-index-lookup", "use-list-literal", "use-dict-literal", "unnecessary-list-index-lookup", "too-many-ancestors", "too-many-instance-attributes", "too-few-public-methods", "too-many-public-methods", "too-many-return-statements", "too-many-branches", "too-many-arguments", "too-many-locals", "too-many-statements", "too-many-boolean-expressions", "literal-comparison", "comparison-with-itself", "comparison-of-constants", "invalid-name", "missing-module-docstring", "missing-class-docstring", "missing-function-docstring", "wildcard-import", "fixme", "unused-wildcard-import", "broad-except", "logging-format-interpolation", "ungrouped-imports"]
+disable = ["import-error", "raw-checker-failed", "bad-inline-option", "locally-disabled", "file-ignored", "suppressed-message", "useless-suppression", "deprecated-pragma", "use-symbolic-message-instead", "useless-option-value", "no-classmethod-decorator", "no-staticmethod-decorator", "useless-object-inheritance", "property-with-parameters", "consider-using-from-import", "consider-merging-isinstance", "too-many-nested-blocks", "simplifiable-if-statement", "redefined-argument-from-local", "no-else-return", "consider-using-ternary", "trailing-comma-tuple", "stop-iteration-return", "simplify-boolean-expression", "inconsistent-return-statements", "useless-return", "consider-swap-variables", "consider-using-join", "consider-using-in", "consider-using-get", "chained-comparison", "consider-using-dict-comprehension", "consider-using-set-comprehension", "simplifiable-if-expression", "no-else-raise", "unnecessary-comprehension", "consider-using-sys-exit", "no-else-break", "no-else-continue", "super-with-arguments", "simplifiable-condition", "condition-evals-to-constant", "consider-using-generator", "use-a-generator", "consider-using-min-builtin", "consider-using-max-builtin", "consider-using-with", "unnecessary-dict-index-lookup", "use-list-literal", "use-dict-literal", "unnecessary-list-index-lookup", "too-many-ancestors", "too-many-instance-attributes", "too-few-public-methods", "too-many-public-methods", "too-many-return-statements", "too-many-branches", "too-many-arguments", "too-many-locals", "too-many-statements", "too-many-boolean-expressions", "literal-comparison", "comparison-with-itself", "comparison-of-constants", "invalid-name", "missing-module-docstring", "missing-class-docstring", "missing-function-docstring", "wildcard-import", "fixme", "unused-wildcard-import", "broad-except", "logging-format-interpolation", "ungrouped-imports", "line-too-long"]
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
