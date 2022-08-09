@@ -19,5 +19,6 @@ repos:
     rev: v2.14.5
     hooks:
       - id: pylint
+        args: [--rcfile, pyproject.toml]
         additional_dependencies:
           - pylintfileheader

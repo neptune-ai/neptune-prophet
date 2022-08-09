@@ -47,8 +47,6 @@ from prophet import Prophet
 from prophet.plot import add_changepoints_to_plot, plot_components_plotly, plot_plotly
 from prophet.serialize import model_to_json
 
-INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-prophet"
-
 
 def create_summary(
     model: Prophet,
@@ -119,9 +117,7 @@ def create_summary(
                 **create_forecast_plots(model, fcst, log_interactive=log_interactive),
             }
     elif log_charts:
-        prophet_summary["diagnostics_charts"] = create_forecast_plots(
-            model, fcst, log_interactive=log_interactive
-        )
+        prophet_summary["diagnostics_charts"] = create_forecast_plots(model, fcst, log_interactive=log_interactive)
 
     return prophet_summary
 
@@ -383,9 +379,9 @@ def _forecast_component_names(model: Prophet, fcst: pd.DataFrame) -> List[str]:
 
 def _fail_if_plotly_is_unavailable():
     try:
-        import plotly
-    except ModuleNotFoundError:
-        raise ModuleNotFoundError("Plotly is needed for log_interactive to work.")
+        import plotly  # pylint: disable=import-outside-toplevel, unused-import
+    except ModuleNotFoundError as exc:
+        raise ModuleNotFoundError("Plotly is needed for log_interactive to work.") from exc
 
 
 def _qq_plot(residuals):
