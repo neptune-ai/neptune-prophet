@@ -42,7 +42,6 @@ except ImportError:
     import neptune
     from neptune.types import File, FloatSeries
 
-from neptune_prophet import __version__
 from prophet import Prophet
 from prophet.plot import add_changepoints_to_plot, plot_components_plotly, plot_plotly
 from prophet.serialize import model_to_json
