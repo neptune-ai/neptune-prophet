@@ -83,5 +83,3 @@ def test_e2e(dataset, model, log_interactive):
     assert run.exists("artifacts/summary/model/serialized_model")
     assert run.exists("artifacts/summary/dataframes")
     assert run.exists("artifacts/summary/diagnostics_charts")
-
-    run.stop()
