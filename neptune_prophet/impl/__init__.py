@@ -156,7 +156,7 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
         else:
             model_config[str(key)] = value
 
-        model_config["history_dates"] = pd.DataFrame(model.history_dates)
+        model_config["history_dates"] = File.as_html(pd.DataFrame(model.history_dates))
 
     return model_config
 
