@@ -26,10 +26,7 @@ def test_e2e(dataset, model, log_interactive):
         except ModuleNotFoundError:
             pytest.skip("plotly is needed for log_interactive to work")
 
-    run = neptune.init(
-        project="common/fbprophet-integration",
-        api_token="ANONYMOUS",
-    )
+    run = neptune.init()
 
     future = model.make_future_dataframe(periods=365)
     forecast = model.predict(future)
