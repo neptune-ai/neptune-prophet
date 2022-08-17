@@ -364,7 +364,7 @@ def _forecast_components_plot(model, fcst, log_interactive=False):
     else:
         fig = model.plot_components(fcst)
         plot = File.as_image(fig)
-        fig.close()
+        plt.close(fig)
         return plot
 
 
@@ -373,7 +373,7 @@ def _forecast_plot(model, fcst, log_interactive=False):
         return File.as_html(plot_plotly(model, fcst))
     else:
         fig = model.plot(fcst)
-        plot = File.as_html(fig)
+        plot = File.as_image(fig)
         plt.close(fig)
         return plot
 
@@ -387,11 +387,11 @@ def _forecast_with_changepoints_plot(model, fcst):
 
 
 def as_neptune_plot(plot):
-    def plot_as_neptune_plot(*args, interactive=False, **kwargs):
+    def plot_as_neptune_plot(*args, log_interactive=False, **kwargs):
         with figure() as fig:
-            fig = plot(*args, ax=fig.subplots(), **kwargs)
+            plot(*args, ax=fig.subplots(), **kwargs)
 
-            if interactive:
+            if log_interactive:
                 return File.as_html(fig)
             return File.as_image(fig)
 
