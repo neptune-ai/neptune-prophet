@@ -25,7 +25,8 @@ __all__ = [
 
 import json
 import tempfile
-from typing import Any, Dict, List, Optional, Tuple
+from contextlib import contextmanager
+from typing import Any, Dict, List, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -104,7 +105,7 @@ def create_summary(
             _fail_if_invalid_fcst(fcst)
 
         if len(fcst.yhat) != len(df.y):
-            raise RuntimeError("The lenghts of the true series and forecast series do not match.")
+            raise RuntimeError("The lengths of the true series and forecast series do not match.")
 
         if log_charts:
             prophet_summary["diagnostics_charts"] = {
@@ -188,7 +189,7 @@ def get_serialized_model(model: Prophet) -> File:
     # create a temporary file and return File field with serialized model
     tmp = tempfile.NamedTemporaryFile("w", delete=False)
     json.dump(model_to_json(model), tmp)
-    return File(tmp.name)
+    return File(tmp.name, extension="json")
 
 
 def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any]:
@@ -261,35 +262,14 @@ def create_forecast_plots(
 
     _fail_if_invalid_fcst(fcst)
 
-    forecast_plots = get_forecast_components(model, fcst)
+    plots = get_forecast_components(model, fcst)
+    plots["forecast"] = _forecast_plot(model, fcst, log_interactive=log_interactive)
 
-    if log_interactive:
-        fig1 = plot_plotly(model, fcst)
-        forecast_plots["forecast"] = File.as_html(fig1)
+    if "trend" in fcst.columns:
+        plots["forecast_components"] = _forecast_components_plot(model, fcst, log_interactive=log_interactive)
+        plots["forecast_changepoints"] = _forecast_with_changepoints_plot(model, fcst)
 
-        if "trend" in fcst.columns:
-            fig2 = plot_components_plotly(model, fcst, figsize=(1000, 400))
-            forecast_plots["forecast_components"] = File.as_html(fig2)
-
-            fig3 = model.plot(fcst)
-            changepoint_fig = add_changepoints_to_plot(fig3.gca(), model, fcst)
-            forecast_plots["forecast_changepoints"] = File.as_image(changepoint_fig[-1].figure)
-            plt.close(fig3)
-        return forecast_plots
-    else:
-        fig1 = model.plot(fcst)
-        forecast_plots["forecast"] = File.as_image(fig1)
-        plt.close(fig1)
-
-        if "trend" in fcst.columns:
-            fig2 = model.plot_components(fcst)
-            forecast_plots["forecast_components"] = File.as_image(fig2)
-
-            changepoint_fig = add_changepoints_to_plot(fig1.gca(), model, fcst)
-            forecast_plots["forecast_changepoints"] = File.as_image(changepoint_fig[-1].figure)
-            plt.close(fig2)
-
-        return forecast_plots
+    return plots
 
 
 def create_residual_diagnostics_plots(
@@ -332,26 +312,21 @@ def create_residual_diagnostics_plots(
 
     residuals = _get_residuals(fcst, y)
 
-    fig1 = _qq_plot(residuals)
-    fig2 = _errors_histogram(residuals)
-    fig3 = _actual_vs_normalized_errors_plot(y, alpha, residuals)
-    fig4 = _acf_plot(residuals)
-    fig5 = _normalized_errors_plot(fcst, residuals, alpha)
-
-    plots = dict()
-    plots["histogram"] = File.as_image(fig2)
-    plots["acf"] = File.as_image(fig4)
-
-    plots["qq_plot"] = _get_plot(fig1, log_interactive)
-    plots["actual_vs_normalized_errors"] = _get_plot(fig3, log_interactive)
-    plots["ds_vs_normalized_errors"] = _get_plot(fig5, log_interactive)
-
-    _close_figs(fig1, fig2, fig3, fig4, fig5)
-
-    return plots
+    # pylint: disable=no-value-for-parameter
+    return {
+        "histogram": _errors_histogram(residuals=residuals),
+        "acf": _acf_plot(residuals=residuals),
+        "qq_plot": _qq_plot(residuals=residuals, log_interactive=log_interactive),
+        "actual_vs_normalized_errors": _actual_vs_normalized_errors_plot(
+            y=y, residuals=residuals, alpha=alpha, log_interactive=log_interactive
+        ),
+        "ds_vs_normalized_errors": _normalized_errors_plot(
+            fcst=fcst, residuals=residuals, alpha=alpha, log_interactive=log_interactive
+        ),
+    }
 
 
-def _get_residuals(fcst: pd.DataFrame, y: pd.Series) -> pd.Series:
+def _get_residuals(fcst: pd.DataFrame, y: pd.Series):
     if len(fcst.yhat) != len(y):
         raise ValueError("The lenghts of the true series and predicted series do not match.")
 
@@ -383,61 +358,87 @@ def _fail_if_plotly_is_unavailable():
         raise ModuleNotFoundError("Plotly is needed for log_interactive to work.") from exc
 
 
-def _qq_plot(residuals):
-    fig1, ax1 = _get_figure()
-    sm.qqplot(residuals, line="45", ax=ax1)
-    ax1.set_title("Q-Q plot of normalized errors")
-    return fig1
+def _forecast_components_plot(model, fcst, log_interactive=False):
+    if log_interactive:
+        return File.as_html(plot_components_plotly(model, fcst, figsize=(1000, 400)))
+    else:
+        fig = model.plot_components(fcst)
+        plot = File.as_image(fig)
+        plt.close(fig)
+        return plot
 
 
-def _errors_histogram(residuals):
-    fig2, ax2 = _get_figure()
-    ax2.hist(residuals, bins="auto")
-    ax2.set_xlabel("Normalized errors")
-    ax2.set_title("Histogram of normalized errors")
-    return fig2
+def _forecast_plot(model, fcst, log_interactive=False):
+    if log_interactive:
+        return File.as_html(plot_plotly(model, fcst))
+    else:
+        fig = model.plot(fcst)
+        plot = File.as_image(fig)
+        plt.close(fig)
+        return plot
 
 
-def _actual_vs_normalized_errors_plot(y, alpha, residuals):
-    fig3, ax3 = _get_figure()
-    ax3.scatter(y, residuals, alpha=alpha)
-    ax3.set_title("Actual vs Normalized errors")
-    ax3.set_ylabel("Normalized errors")
-    ax3.set_xlabel("y")
-    return fig3
+def _forecast_with_changepoints_plot(model, fcst):
+    fig = model.plot(fcst)
+    changepoint_fig = add_changepoints_to_plot(fig.gca(), model, fcst)
+    plot = File.as_image(changepoint_fig[-1].figure)
+    plt.close(fig)
+    return plot
 
 
-def _acf_plot(residuals):
-    fig, ax = _get_figure()
+def as_neptune_plot(plot):
+    def plot_as_neptune_plot(*args, log_interactive=False, **kwargs):
+        with figure() as fig:
+            plot(*args, ax=fig.subplots(), **kwargs)
+
+            if log_interactive:
+                return File.as_html(fig)
+            return File.as_image(fig)
+
+    return plot_as_neptune_plot
+
+
+@contextmanager
+def figure():
+    fig = plt.figure(figsize=(20, 10))
+    yield fig
+    plt.close(fig)
+
+
+@as_neptune_plot
+def _qq_plot(residuals, ax):
+    sm.qqplot(residuals, line="45", ax=ax)
+    ax.set_title("Q-Q plot of normalized errors")
+
+
+@as_neptune_plot
+def _errors_histogram(residuals, ax):
+    ax.hist(residuals, bins="auto")
+    ax.set_xlabel("Normalized errors")
+    ax.set_title("Histogram of normalized errors")
+
+
+@as_neptune_plot
+def _actual_vs_normalized_errors_plot(y, residuals, alpha, ax):
+    ax.scatter(y, residuals, alpha=alpha)
+    ax.set_title("Actual vs Normalized errors")
+    ax.set_ylabel("Normalized errors")
+    ax.set_xlabel("y")
+
+
+@as_neptune_plot
+def _acf_plot(residuals, ax):
     sm.graphics.tsa.plot_acf(
         residuals,
         auto_ylims=True,
         ax=ax,
         title="ACF of normalized errors",
     )
-    return fig
 
 
-def _get_plot(fig, log_interactive) -> File:
-    if log_interactive:
-        return File.as_html(fig)
-    return File.as_image(fig)
-
-
-def _close_figs(*args):
-    for fig in args:
-        plt.close(fig)
-
-
-def _get_figure(figsize=(20, 10)) -> Tuple[plt.Figure, plt.Axes]:
-    fig, ax = plt.subplots(1, figsize=figsize)
-    return fig, ax
-
-
-def _normalized_errors_plot(fcst, residuals, alpha):
-    fig, ax = _get_figure()
+@as_neptune_plot
+def _normalized_errors_plot(fcst, residuals, alpha, ax):
     ax.scatter(fcst["ds"], residuals, alpha=alpha)
     ax.set_ylabel("Normalized errors")
     ax.set_xlabel("Dates")
     ax.set_title("DS vs Normalized errors")
-    return fig
