@@ -1,4 +1,4 @@
-## [UNRELEASED] neptune-prophet 0.2.0
+## neptune-prophet 0.2.0
 
 ### Fixes
 - Fixed typo in length error ([#8](https://github.com/neptune-ai/neptune-prophet/pull/8))
