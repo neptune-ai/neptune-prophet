@@ -63,18 +63,18 @@ def create_summary(
             If provided, additional plots will be recorded.
         fcst: Forecast returned by Prophet.
             If not provided, it'll be calculated using the df data.
-        log_charts: Aditionally save the diagnostic plots.
+        log_charts: Additionally save the diagnostic plots.
         log_interactive: Save the plots as interactive HTML files.
 
     Returns:
         Dictionary with all the plots.
 
-    Examples:
+    Example:
         import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
 
-        neptune.init_run()
+        run = neptune.init_run()
 
         dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
 
@@ -131,12 +131,12 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
     Returns:
         Dictionary with all summary items.
 
-    Examples:
+    Example:
         import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
 
-        neptune.init_run()
+        run = neptune.init_run()
 
         dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
 
@@ -171,12 +171,12 @@ def get_serialized_model(model: Prophet) -> File:
     Returns:
         File containing the model.
 
-    Examples:
+    Example:
         import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
 
-        neptune.init_run()
+        run = neptune.init_run()
 
         dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
 
@@ -202,12 +202,12 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any
     Returns:
         Dictionary with all the plots.
 
-    Examples:
+    Example:
         import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
 
-        neptune.init_run()
+        run = neptune.init_run()
 
         dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
 
@@ -241,12 +241,12 @@ def create_forecast_plots(
     Returns:
         Dictionary with all the plots.
 
-    Examples:
+    Example:
         import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
 
-        neptune.init_run()
+        run = neptune.init_run()
 
         dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
 
@@ -289,12 +289,12 @@ def create_residual_diagnostics_plots(
     Returns:
         Dictionary with all the plots.
 
-    Examples:
+    Example:
         import pandas as pd
         from prophet import Prophet
         import neptune.new as neptune
 
-        neptune.init_run()
+        run = neptune.init_run()
 
         dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
 
