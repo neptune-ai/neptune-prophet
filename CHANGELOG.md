@@ -1,3 +1,8 @@
+## neptune-prophet 0.3.0
+
+### Fixes
+- Changed the default to `log_interactive = False` ([#10](https://github.com/neptune-ai/neptune-prophet/pull/10))
+
 ## neptune-prophet 0.2.0
 
 ### Fixes

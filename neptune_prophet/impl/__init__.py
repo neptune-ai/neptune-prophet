@@ -53,7 +53,7 @@ def create_summary(
     df: Optional[pd.DataFrame] = None,
     fcst: Optional[pd.DataFrame] = None,
     log_charts: bool = True,
-    log_interactive: bool = True,
+    log_interactive: bool = False,
 ) -> Dict[str, Any]:
     """Prepares additional diagnostic plots to be saved to Neptune.
 
@@ -229,7 +229,7 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any
 def create_forecast_plots(
     model: Prophet,
     fcst: pd.DataFrame,
-    log_interactive: bool = True,
+    log_interactive: bool = False,
 ) -> Dict[str, Any]:
     """Prepares the Prophet plots to be saved to Neptune.
 
@@ -275,7 +275,7 @@ def create_forecast_plots(
 def create_residual_diagnostics_plots(
     fcst: pd.DataFrame,
     y: pd.Series,
-    log_interactive: bool = True,
+    log_interactive: bool = False,
     alpha: float = 0.7,
 ) -> Dict[str, Any]:
     """Prepares additional diagnostic plots to be saved to Neptune.
