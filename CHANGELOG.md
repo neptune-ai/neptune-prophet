@@ -1,8 +1,8 @@
-## neptune-prophet 0.3.1
+## neptune-prophet 0.4.0
 
 ### Fixes
 
-- Changed required version of statsmodels that was causing problems in Colab ([#12](https://github.com/neptune-ai/neptune-prophet/pull/12))
+- Fixed required version of statsmodels that was causing problems in Colab ([#12](https://github.com/neptune-ai/neptune-prophet/pull/12))
 
 ## neptune-prophet 0.3.0
 
