@@ -30,7 +30,7 @@ def main():
         "pandas",
         "prophet>=1.0",
         "scipy",
-        "statsmodels",
+        "statsmodels>=0.13.0",
     ]
 
     version = None
