@@ -16,7 +16,7 @@ Experiment tracking, model registry, data versioning, and live model monitoring 
 * [other metadata](https://docs.neptune.ai/you-should-know/what-can-you-log-and-display)
 
 ![image](https://user-images.githubusercontent.com/97611089/188817349-973a49b2-e0d3-44dd-b51d-7dec670158f9.png)
-*Example dashboard in the Neptune UI showing with diagnostic charts*
+*Example dashboard in the Neptune app showing diagnostic charts*
 
 ## Resources
 
