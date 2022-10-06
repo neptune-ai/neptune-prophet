@@ -1,3 +1,8 @@
+## [UNRELEASED]  neptune-prophet 0.4.1
+
+## Changes
+- Moved `neptune_prophet` package to `src` directory  ([#15](https://github.com/neptune-ai/neptune-prophet/pull/15))
+
 ## neptune-prophet 0.4.0
 
 ### Fixes
