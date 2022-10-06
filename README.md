@@ -10,9 +10,9 @@ Experiment tracking, model registry, data versioning, and live model monitoring 
 
 ## What will be logged to Neptune?
 
-* parameters, 
-* forecast data frames, 
-* residual diagnostic charts, 
+* parameters,
+* forecast data frames,
+* residual diagnostic charts,
 * [other metadata](https://docs.neptune.ai/you-should-know/what-can-you-log-and-display)
 
 ![image](https://user-images.githubusercontent.com/97611089/188817349-973a49b2-e0d3-44dd-b51d-7dec670158f9.png)
@@ -51,7 +51,7 @@ import neptune.new.integrations.prophet as npt_utils
 run = neptune.init_run(project="common/fbprophet-integration", api_token=neptune.ANONYMOUS_API_TOKEN)
 
 
-# Load dataset and fit model 
+# Load dataset and fit model
 dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv'
 )
 model = Prophet()
