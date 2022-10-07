@@ -26,7 +26,12 @@ __all__ = [
 import json
 import tempfile
 from contextlib import contextmanager
-from typing import Any, Dict, List, Optional
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+)
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -37,14 +42,21 @@ from scipy import stats
 try:
     # neptune-client=0.9.0+ package structure
     import neptune.new as neptune
-    from neptune.new.types import File, FloatSeries
+    from neptune.new.types import (
+        File,
+        FloatSeries,
+    )
 except ImportError:
     # neptune-client>=1.0.0 package structure
     import neptune
     from neptune.types import File, FloatSeries
 
 from prophet import Prophet
-from prophet.plot import add_changepoints_to_plot, plot_components_plotly, plot_plotly
+from prophet.plot import (
+    add_changepoints_to_plot,
+    plot_components_plotly,
+    plot_plotly,
+)
 from prophet.serialize import model_to_json
 
 
