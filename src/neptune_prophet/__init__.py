@@ -14,10 +14,12 @@
 # limitations under the License.
 #
 
-from ._version import get_versions
-
-__version__ = get_versions()["version"]
-
-__all__ = [
-    "__version__",
-]
+from neptune_prophet.impl import (
+    __version__,
+    create_forecast_plots,
+    create_residual_diagnostics_plots,
+    create_summary,
+    get_forecast_components,
+    get_model_config,
+    get_serialized_model,
+)
