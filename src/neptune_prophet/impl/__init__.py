@@ -21,7 +21,6 @@ __all__ = [
     "get_forecast_components",
     "get_model_config",
     "get_serialized_model",
-    "__version__",
 ]
 
 import json
@@ -60,10 +59,6 @@ from prophet.plot import (
     plot_plotly,
 )
 from prophet.serialize import model_to_json
-
-from neptune_prophet._version import get_versions
-
-__version__ = get_versions()["version"]
 
 
 def create_summary(

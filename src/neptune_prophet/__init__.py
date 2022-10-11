@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
+from neptune_prophet._version import get_versions
 from neptune_prophet.impl import (
-    __version__,
     create_forecast_plots,
     create_residual_diagnostics_plots,
     create_summary,
@@ -23,3 +23,5 @@ from neptune_prophet.impl import (
     get_model_config,
     get_serialized_model,
 )
+
+__version__ = get_versions()["version"]
