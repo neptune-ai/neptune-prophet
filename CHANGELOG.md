@@ -5,6 +5,7 @@
 
 ### Fixes
 - Fixed import from `impl` package ([#18](https://github.com/neptune-ai/neptune-prophet/pull/18))
+
 ## neptune-prophet 0.4.0
 
 ### Fixes
