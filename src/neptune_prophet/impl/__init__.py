@@ -41,7 +41,6 @@ from scipy import stats
 
 try:
     # neptune-client=0.9.0+ package structure
-    import neptune.new as neptune
     from neptune.new.types import (
         File,
         FloatSeries,
@@ -49,7 +48,6 @@ try:
 
 except ImportError:
     # neptune-client>=1.0.0 package structure
-    import neptune
     from neptune.types import File, FloatSeries
 
 from prophet import Prophet
@@ -89,7 +87,9 @@ def create_summary(
 
         run = neptune.init_run()
 
-        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+        dataset = pd.read_csv(
+            'https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv'
+        )
 
         model = Prophet()
         model.fit(dataset)
@@ -151,7 +151,9 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
 
         run = neptune.init_run()
 
-        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+        dataset = pd.read_csv(
+            'https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv'
+        )
 
         model = Prophet()
         model.fit(dataset)
@@ -191,7 +193,9 @@ def get_serialized_model(model: Prophet) -> File:
 
         run = neptune.init_run()
 
-        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+        dataset = pd.read_csv(
+            'https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv'
+        )
 
         model = Prophet()
         model.fit(dataset)
@@ -222,7 +226,9 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any
 
         run = neptune.init_run()
 
-        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+        dataset = pd.read_csv(
+            'https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv'
+        )
 
         model = Prophet()
         model.fit(dataset)
@@ -261,7 +267,9 @@ def create_forecast_plots(
 
         run = neptune.init_run()
 
-        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+        dataset = pd.read_csv(
+            'https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv'
+        )
 
         model = Prophet()
         model.fit(dataset)
@@ -309,7 +317,9 @@ def create_residual_diagnostics_plots(
 
         run = neptune.init_run()
 
-        dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv')
+        dataset = pd.read_csv(
+            'https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv'
+        )
 
         model = Prophet()
         model.fit(dataset)
@@ -356,7 +366,8 @@ def _fail_if_invalid_fcst(obj: Any):
 
 def _forecast_component_names(model: Prophet, fcst: pd.DataFrame) -> List[str]:
     # it is the same code as in Prophet, but simplified:
-    # https://github.com/facebook/prophet/blob/ba9a5a2c6e2400206017a5ddfd71f5042da9f65b/python/prophet/plot.py#L127-L140
+    # https://github.com/facebook/prophet/blob/ba9a5a2c6e2400206017a5ddfd71f5042da9f65b/python/prophet/plot.py#L127
+    # -L140
     components = ["yhat", "yhat_lower", "yhat_upper", "trend"]
     if model.train_holiday_names is not None and "holidays" in fcst:
         components.append("holidays")
@@ -366,7 +377,8 @@ def _forecast_component_names(model: Prophet, fcst: pd.DataFrame) -> List[str]:
 
 def _fail_if_plotly_is_unavailable():
     try:
-        import plotly  # pylint: disable=import-outside-toplevel, unused-import
+        # pylint: disable=import-outside-toplevel, unused-import
+        import plotly  # noqa: F401
     except ModuleNotFoundError as exc:
         raise ModuleNotFoundError("Plotly is needed for log_interactive to work.") from exc
 
