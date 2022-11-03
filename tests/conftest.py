@@ -1,4 +1,3 @@
-# pylint: disable=redefined-outer-name
 import pandas as pd
 import pytest
 from prophet import Prophet

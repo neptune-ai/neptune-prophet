@@ -335,7 +335,6 @@ def create_residual_diagnostics_plots(
 
     residuals = _get_residuals(fcst, y)
 
-    # pylint: disable=no-value-for-parameter
     return {
         "histogram": _errors_histogram(residuals=residuals),
         "acf": _acf_plot(residuals=residuals),
@@ -377,7 +376,6 @@ def _forecast_component_names(model: Prophet, fcst: pd.DataFrame) -> List[str]:
 
 def _fail_if_plotly_is_unavailable():
     try:
-        # pylint: disable=import-outside-toplevel, unused-import
         import plotly  # noqa: F401
     except ModuleNotFoundError as exc:
         raise ModuleNotFoundError("Plotly is needed for log_interactive to work.") from exc

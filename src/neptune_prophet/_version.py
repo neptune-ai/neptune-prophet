@@ -38,12 +38,12 @@ def get_config():
     # these strings are filled in when 'setup.py versioneer' creates
     # _version.py
     cfg = VersioneerConfig()
-    cfg.VCS = "git"  # pylint: disable=attribute-defined-outside-init
-    cfg.style = "pep440"  # pylint: disable=attribute-defined-outside-init
-    cfg.tag_prefix = ""  # pylint: disable=attribute-defined-outside-init
-    cfg.parentdir_prefix = ""  # pylint: disable=attribute-defined-outside-init
-    cfg.versionfile_source = "neptune_prophet/_version.py"  # pylint: disable=attribute-defined-outside-init
-    cfg.verbose = False  # pylint: disable=attribute-defined-outside-init
+    cfg.VCS = "git"
+    cfg.style = "pep440"
+    cfg.tag_prefix = ""
+    cfg.parentdir_prefix = ""
+    cfg.versionfile_source = "neptune_prophet/_version.py"
+    cfg.verbose = False
     return cfg
 
 
@@ -230,7 +230,7 @@ def git_versions_from_keywords(keywords, tag_prefix, verbose):
 
 
 @register_vcs_handler("git", "pieces_from_vcs")
-def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):  # pylint: disable=redefined-outer-name
+def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
     """Get version from 'git describe' in the root of the source tree.
 
     This only gets called if the git-archive 'subst' keywords were *not*
@@ -348,12 +348,12 @@ def render_pep440(pieces):
         rendered = pieces["closest-tag"]
         if pieces["distance"] or pieces["dirty"]:
             rendered += plus_or_dot(pieces)
-            rendered += "%d.g%s" % (pieces["distance"], pieces["short"])  # pylint: disable=consider-using-f-string
+            rendered += "%d.g%s" % (pieces["distance"], pieces["short"])
             if pieces["dirty"]:
                 rendered += ".dirty"
     else:
         # exception #1
-        rendered = "0+untagged.%d.g%s" % (  # pylint: disable=consider-using-f-string
+        rendered = "0+untagged.%d.g%s" % (
             pieces["distance"],
             pieces["short"],
         )
@@ -421,7 +421,7 @@ def render_pep440_old(pieces):
                 rendered += ".dev0"
     else:
         # exception #1
-        rendered = "0.post%d" % pieces["distance"]  # pylint: disable=consider-using-f-string
+        rendered = "0.post%d" % pieces["distance"]
         if pieces["dirty"]:
             rendered += ".dev0"
     return rendered
@@ -438,7 +438,7 @@ def render_git_describe(pieces):
     if pieces["closest-tag"]:
         rendered = pieces["closest-tag"]
         if pieces["distance"]:
-            rendered += "-%d-g%s" % (pieces["distance"], pieces["short"])  # pylint: disable=consider-using-f-string
+            rendered += "-%d-g%s" % (pieces["distance"], pieces["short"])
     else:
         # exception #1
         rendered = pieces["short"]
@@ -458,7 +458,7 @@ def render_git_describe_long(pieces):
     """
     if pieces["closest-tag"]:
         rendered = pieces["closest-tag"]
-        rendered += "-%d-g%s" % (pieces["distance"], pieces["short"])  # pylint: disable=consider-using-f-string
+        rendered += "-%d-g%s" % (pieces["distance"], pieces["short"])
     else:
         # exception #1
         rendered = pieces["short"]
