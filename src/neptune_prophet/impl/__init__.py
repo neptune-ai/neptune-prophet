@@ -204,9 +204,9 @@ def get_serialized_model(model: Prophet) -> File:
     """
 
     # create a temporary file and return File field with serialized model
-    tmp = tempfile.NamedTemporaryFile("w", delete=False)
+    tmp = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
     json.dump(model_to_json(model), tmp)
-    return File(tmp.name, extension="json")
+    return File(tmp.name)
 
 
 def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any]:
