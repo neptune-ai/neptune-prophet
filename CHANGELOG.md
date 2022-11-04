@@ -1,7 +1,8 @@
 ## [UNRELEASED]  neptune-prophet 0.4.1
 
 ### Changes
-- Moved `neptune_prophet` package to `src` directory  ([#15](https://github.com/neptune-ai/neptune-prophet/pull/15))
+- Moved `neptune_prophet` package to `src` directory ([#15](https://github.com/neptune-ai/neptune-prophet/pull/15))
+- Drop usage of deprecated File.extension init attribute ([#21](https://github.com/neptune-ai/neptune-prophet/pull/21))
 
 ### Fixes
 - Fixed import from `impl` package ([#18](https://github.com/neptune-ai/neptune-prophet/pull/18))
