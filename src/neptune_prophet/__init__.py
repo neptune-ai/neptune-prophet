@@ -23,7 +23,19 @@ __all__ = [
     "get_serialized_model",
 ]
 
-from neptune_prophet._version import get_versions
+import sys
+
+if sys.version_info >= (3, 8):
+    from importlib.metadata import (
+        PackageNotFoundError,
+        version,
+    )
+else:
+    from importlib_metadata import (
+        PackageNotFoundError,
+        version,
+    )
+
 from neptune_prophet.impl import (
     create_forecast_plots,
     create_residual_diagnostics_plots,
@@ -33,4 +45,8 @@ from neptune_prophet.impl import (
     get_serialized_model,
 )
 
-__version__ = get_versions()["version"]
+try:
+    __version__ = version("neptune-prophet")
+except PackageNotFoundError:
+    # package is not installed
+    pass
