@@ -107,7 +107,7 @@ def create_summary(
         "serialized_model": get_serialized_model(model),
     }
 
-    prophet_summary["dataframes"] = {"forecast": File.as_html(fcst)}
+    prophet_summary["dataframes"] = {}
 
     if df is not None:
         prophet_summary["dataframes"]["df"] = File.as_html(df)
@@ -131,6 +131,8 @@ def create_summary(
             }
     elif log_charts:
         prophet_summary["diagnostics_charts"] = create_forecast_plots(model, fcst, log_interactive=log_interactive)
+
+    prophet_summary["dataframes"] = {"forecast": File.as_html(fcst)}
 
     return prophet_summary
 
