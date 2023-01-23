@@ -50,6 +50,7 @@ except ImportError:
     # neptune-client>=1.0.0 package structure
     from neptune.types import File, FloatSeries
 
+from neptune_prophet.impl.version import __version__
 from prophet import Prophet
 from prophet.plot import (
     add_changepoints_to_plot,
@@ -133,6 +134,8 @@ def create_summary(
         prophet_summary["diagnostics_charts"] = create_forecast_plots(model, fcst, log_interactive=log_interactive)
 
     prophet_summary["dataframes"] = {"forecast": File.as_html(fcst)}
+
+    prophet_summary["integration/about/neptune-prophet"] = __version__
 
     return prophet_summary
 
