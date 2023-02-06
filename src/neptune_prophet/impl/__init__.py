@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+from __future__ import annotations
+
 __all__ = [
     "create_forecast_plots",
     "create_residual_diagnostics_plots",
@@ -30,6 +32,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Mapping,
     Optional,
 )
 
@@ -37,6 +40,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+from neptune.new.internal.utils import StringifyValue
 from scipy import stats
 
 try:
@@ -50,7 +54,7 @@ except ImportError:
     # neptune-client>=1.0.0 package structure
     from neptune.types import File, FloatSeries
 
-from neptune_prophet.impl.version import __version__
+from neptune.new.utils import stringify_unsupported
 from prophet import Prophet
 from prophet.plot import (
     add_changepoints_to_plot,
@@ -59,6 +63,8 @@ from prophet.plot import (
 )
 from prophet.serialize import model_to_json
 
+from neptune_prophet.impl.version import __version__
+
 
 def create_summary(
     model: Prophet,
@@ -66,7 +72,7 @@ def create_summary(
     fcst: Optional[pd.DataFrame] = None,
     log_charts: bool = True,
     log_interactive: bool = False,
-) -> Dict[str, Any]:
+) -> StringifyValue | Mapping | list | tuple:
     """Prepares additional diagnostic plots to be saved to Neptune.
 
     Args:
@@ -137,7 +143,7 @@ def create_summary(
 
     prophet_summary["integration/about/neptune-prophet"] = __version__
 
-    return prophet_summary
+    return stringify_unsupported(prophet_summary)
 
 
 def get_model_config(model: Prophet) -> Dict[str, Any]:
@@ -175,7 +181,7 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
         elif isinstance(value, (np.ndarray, pd.Series)):
             model_config[str(key)] = File.as_html(pd.DataFrame(value))
         else:
-            model_config[str(key)] = value
+            model_config[str(key)] = str(value)
 
         model_config["history_dates"] = File.as_html(pd.DataFrame(model.history_dates))
 

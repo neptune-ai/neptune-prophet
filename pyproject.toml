@@ -16,7 +16,7 @@ importlib-metadata = { version = "*", python = "<3.8" }
 
 # Base requirements
 matplotlib = "<=3.4.3"
-neptune-client = ">=0.15.0"
+neptune-client = ">=0.16.17"
 numpy = "*"
 pandas = "*"
 prophet = ">=1.0"
