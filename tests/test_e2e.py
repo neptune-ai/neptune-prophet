@@ -14,11 +14,11 @@ from neptune_prophet.impl import (
 )
 
 try:
-    # neptune-client=0.9.0+ package structure
-    from neptune.new import init_run
-except ImportError:
     # neptune-client>=1.0.0 package structure
     from neptune import init_run
+except ImportError:
+    # neptune-client=0.9.0+ package structure
+    from neptune.new import init_run
 
 
 def test_get_model_config(model):

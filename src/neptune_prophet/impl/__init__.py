@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-from __future__ import annotations
 
 __all__ = [
     "create_forecast_plots",
@@ -40,21 +39,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from neptune.new.internal.utils import StringifyValue
 from scipy import stats
 
 try:
+    # neptune-client>=1.0.0 package structure
+    from neptune.types import (
+        File,
+        FloatSeries,
+    )
+    from neptune.utils import stringify_unsupported
+
+except ImportError:
     # neptune-client=0.9.0+ package structure
     from neptune.new.types import (
         File,
         FloatSeries,
     )
+    from neptune.new.utils import stringify_unsupported
 
-except ImportError:
-    # neptune-client>=1.0.0 package structure
-    from neptune.types import File, FloatSeries
-
-from neptune.new.utils import stringify_unsupported
 from prophet import Prophet
 from prophet.plot import (
     add_changepoints_to_plot,
@@ -72,7 +74,7 @@ def create_summary(
     fcst: Optional[pd.DataFrame] = None,
     log_charts: bool = True,
     log_interactive: bool = False,
-) -> StringifyValue | Mapping | list | tuple:
+) -> Mapping:
     """Prepares additional diagnostic plots to be saved to Neptune.
 
     Args:
