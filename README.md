@@ -45,7 +45,7 @@ pip install neptune-prophet
 # In Python
 import pandas as pd
 from prophet import Prophet
-import neptune as neptune
+import neptune
 import neptune.integrations.prophet as npt_utils
 
 # Start a run
