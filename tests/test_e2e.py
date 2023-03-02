@@ -3,6 +3,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from neptune import init_run
 
 from neptune_prophet.impl import (
     create_forecast_plots,
@@ -12,13 +13,6 @@ from neptune_prophet.impl import (
     get_model_config,
     get_serialized_model,
 )
-
-try:
-    # neptune-client=0.9.0+ package structure
-    from neptune.new import init_run
-except ImportError:
-    # neptune-client>=1.0.0 package structure
-    from neptune import init_run
 
 
 def test_get_model_config(model):

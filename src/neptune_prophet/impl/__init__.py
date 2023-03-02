@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+
 __all__ = [
     "create_forecast_plots",
     "create_residual_diagnostics_plots",
@@ -30,6 +31,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Mapping,
     Optional,
 )
 
@@ -37,20 +39,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from scipy import stats
-
-try:
-    # neptune-client=0.9.0+ package structure
-    from neptune.new.types import (
-        File,
-        FloatSeries,
-    )
-
-except ImportError:
-    # neptune-client>=1.0.0 package structure
-    from neptune.types import File, FloatSeries
-
-from neptune_prophet.impl.version import __version__
+from neptune.types import (
+    File,
+    FloatSeries,
+)
+from neptune.utils import stringify_unsupported
 from prophet import Prophet
 from prophet.plot import (
     add_changepoints_to_plot,
@@ -58,6 +51,9 @@ from prophet.plot import (
     plot_plotly,
 )
 from prophet.serialize import model_to_json
+from scipy import stats
+
+from neptune_prophet.impl.version import __version__
 
 
 def create_summary(
@@ -66,7 +62,7 @@ def create_summary(
     fcst: Optional[pd.DataFrame] = None,
     log_charts: bool = True,
     log_interactive: bool = False,
-) -> Dict[str, Any]:
+) -> Mapping:
     """Prepares additional diagnostic plots to be saved to Neptune.
 
     Args:
@@ -84,7 +80,7 @@ def create_summary(
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
 
         run = neptune.init_run()
 
@@ -137,7 +133,7 @@ def create_summary(
 
     prophet_summary["integration/about/neptune-prophet"] = __version__
 
-    return prophet_summary
+    return stringify_unsupported(prophet_summary)
 
 
 def get_model_config(model: Prophet) -> Dict[str, Any]:
@@ -175,7 +171,7 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
         elif isinstance(value, (np.ndarray, pd.Series)):
             model_config[str(key)] = File.as_html(pd.DataFrame(value))
         else:
-            model_config[str(key)] = value
+            model_config[str(key)] = str(value)
 
         model_config["history_dates"] = File.as_html(pd.DataFrame(model.history_dates))
 
@@ -227,7 +223,7 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
 
         run = neptune.init_run()
 
@@ -268,7 +264,7 @@ def create_forecast_plots(
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
 
         run = neptune.init_run()
 
@@ -318,7 +314,7 @@ def create_residual_diagnostics_plots(
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
 
         run = neptune.init_run()
 
