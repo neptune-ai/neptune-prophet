@@ -13,7 +13,7 @@ Experiment tracking, model registry, data versioning, and live model monitoring 
 * parameters,
 * forecast data frames,
 * residual diagnostic charts,
-* [other metadata](https://docs.neptune.ai/logging/what-can-you-log)
+* [other metadata](https://docs.neptune.ai/logging/what_you_can_log)
 
 ![image](https://user-images.githubusercontent.com/97611089/188817349-973a49b2-e0d3-44dd-b51d-7dec670158f9.png)
 *Example dashboard in the Neptune app showing diagnostic charts*
@@ -29,7 +29,7 @@ Experiment tracking, model registry, data versioning, and live model monitoring 
 
 ### Before you start
 
-- [Install and set up Neptune](https://docs.neptune.ai/getting-started/installation).
+- [Install and set up Neptune](https://docs.neptune.ai/setup/installation).
 - Have Prophet installed.
 
 ### Installation
@@ -69,7 +69,7 @@ run.stop()
 
 If you got stuck or simply want to talk to us, here are your options:
 
-* Check our [FAQ page](https://docs.neptune.ai/getting-started/getting-help#frequently-asked-questions).
+* Check our [FAQ page](https://docs.neptune.ai/getting_help).
 * You can submit bug reports, feature requests, or contributions directly to the repository.
 * Chat! In the Neptune app, click the blue message icon in the bottom-right corner and send a message. A real person will talk to you ASAP (typically very ASAP).
 * You can just shoot us an email at [support@neptune.ai](mailto:support@neptune.ai).
