@@ -39,24 +39,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from scipy import stats
-
-try:
-    # neptune-client>=1.0.0 package structure
-    from neptune.types import (
-        File,
-        FloatSeries,
-    )
-    from neptune.utils import stringify_unsupported
-
-except ImportError:
-    # neptune-client=0.9.0+ package structure
-    from neptune.new.types import (
-        File,
-        FloatSeries,
-    )
-    from neptune.new.utils import stringify_unsupported
-
+from neptune.types import (
+    File,
+    FloatSeries,
+)
+from neptune.utils import stringify_unsupported
 from prophet import Prophet
 from prophet.plot import (
     add_changepoints_to_plot,
@@ -64,6 +51,7 @@ from prophet.plot import (
     plot_plotly,
 )
 from prophet.serialize import model_to_json
+from scipy import stats
 
 from neptune_prophet.impl.version import __version__
 
@@ -92,7 +80,7 @@ def create_summary(
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
 
         run = neptune.init_run()
 
@@ -235,7 +223,7 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
 
         run = neptune.init_run()
 
@@ -276,7 +264,7 @@ def create_forecast_plots(
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
 
         run = neptune.init_run()
 
@@ -326,7 +314,7 @@ def create_residual_diagnostics_plots(
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
 
         run = neptune.init_run()
 
