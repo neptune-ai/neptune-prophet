@@ -1,3 +1,6 @@
+## neptune-prophet 0.5.0
+- Updated integration for compatibility with `neptune` v1 ([#26](https://github.com/neptune-ai/neptune-prophet/pull/26))
+
 ## neptune-prophet 0.4.1
 
 ### Changes
