@@ -13,14 +13,14 @@ Experiment tracking, model registry, data versioning, and live model monitoring 
 * parameters,
 * forecast data frames,
 * residual diagnostic charts,
-* [other metadata](https://docs.neptune.ai/you-should-know/what-can-you-log-and-display)
+* [other metadata](https://docs.neptune.ai/logging/what-can-you-log)
 
 ![image](https://user-images.githubusercontent.com/97611089/188817349-973a49b2-e0d3-44dd-b51d-7dec670158f9.png)
 *Example dashboard in the Neptune app showing diagnostic charts*
 
 ## Resources
 
-* [Documentation](https://docs.neptune.ai/integrations-and-supported-tools/model-training/prophet)
+* [Documentation](https://docs.neptune.ai/integrations/prophet)
 * [Code example on GitHub](https://github.com/neptune-ai/examples/tree/main/integrations-and-supported-tools/prophet/scripts)
 * [Example project in the Neptune app](https://app.neptune.ai/o/common/org/fbprophet-integration/experiments?split=tbl&dash=charts&viewId=standard-view)
 * [Run example in Google Colab](https://colab.research.google.com/github/neptune-ai/examples/blob/main/integrations-and-supported-tools/prophet/notebooks/Neptune_prophet.ipynb)
@@ -34,33 +34,32 @@ Experiment tracking, model registry, data versioning, and live model monitoring 
 
 ### Installation
 
-```python
+```
+# On the command line
 pip install neptune-prophet
 ```
 
 ### Logging example
 
 ```python
+# In Python
 import pandas as pd
 from prophet import Prophet
-import neptune.new as neptune
-import neptune.new.integrations.prophet as npt_utils
-
+import neptune as neptune
+import neptune.integrations.prophet as npt_utils
 
 # Start a run
 run = neptune.init_run(project="common/fbprophet-integration", api_token=neptune.ANONYMOUS_API_TOKEN)
 
-
 # Load dataset and fit model
-dataset = pd.read_csv('https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv'
+dataset = pd.read_csv(
+    "https://raw.githubusercontent.com/facebook/prophet/main/examples/example_wp_log_peyton_manning.csv"
 )
 model = Prophet()
 model.fit(dataset)
 
-
 # Log summary metadata (including model, dataset, forecast and charts)
 run["prophet_summary"] = npt_utils.create_summary(model=model, df=df, fcst=forecast)
-
 
 # Stop the run
 run.stop()
