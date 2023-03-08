@@ -81,6 +81,7 @@ def create_summary(
         import pandas as pd
         from prophet import Prophet
         import neptune
+        import neptune.integrations.prophet as npt_utils
 
         run = neptune.init_run()
 
@@ -91,7 +92,7 @@ def create_summary(
         model = Prophet()
         model.fit(dataset)
 
-        run["summary"] = create_summary(model, dataset)
+        run["summary"] = npt_utils.create_summary(model, dataset)
     """
 
     if log_interactive:
@@ -148,7 +149,8 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
+        import neptune.integrations.prophet as npt_utils
 
         run = neptune.init_run()
 
@@ -159,7 +161,7 @@ def get_model_config(model: Prophet) -> Dict[str, Any]:
         model = Prophet()
         model.fit(dataset)
 
-        run["model_config"] = get_model_config(model)
+        run["model_config"] = npt_utils.get_model_config(model)
     """
 
     model_config = dict()
@@ -190,7 +192,8 @@ def get_serialized_model(model: Prophet) -> File:
     Example:
         import pandas as pd
         from prophet import Prophet
-        import neptune.new as neptune
+        import neptune
+        import neptune.integrations.prophet as npt_utils
 
         run = neptune.init_run()
 
@@ -201,7 +204,7 @@ def get_serialized_model(model: Prophet) -> File:
         model = Prophet()
         model.fit(dataset)
 
-        run["model"] = get_serialized_model(model)
+        run["model"] = npt_utils.get_serialized_model(model)
     """
 
     # create a temporary file and return File field with serialized model
@@ -224,6 +227,7 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any
         import pandas as pd
         from prophet import Prophet
         import neptune
+        import neptune.integrations.prophet as npt_utils
 
         run = neptune.init_run()
 
@@ -235,7 +239,7 @@ def get_forecast_components(model: Prophet, fcst: pd.DataFrame) -> Dict[str, Any
         model.fit(dataset)
         predicted = model.predict(dataset)
 
-        run["forecast_components"] = get_forecast_components(model, predicted)
+        run["forecast_components"] = npt_utils.get_forecast_components(model, predicted)
     """
     forecast_components = dict()
 
@@ -265,6 +269,7 @@ def create_forecast_plots(
         import pandas as pd
         from prophet import Prophet
         import neptune
+        import neptune.integrations.prophet as npt_utils
 
         run = neptune.init_run()
 
@@ -276,7 +281,7 @@ def create_forecast_plots(
         model.fit(dataset)
         predicted = model.predict(dataset)
 
-        run["forecast_plots"] = create_forecast_plots(model, predicted)
+        run["forecast_plots"] = npt_utils.create_forecast_plots(model, predicted)
     """
 
     if log_interactive:
@@ -315,6 +320,7 @@ def create_residual_diagnostics_plots(
         import pandas as pd
         from prophet import Prophet
         import neptune
+        import neptune.integrations.prophet as npt_utils
 
         run = neptune.init_run()
 
@@ -326,7 +332,7 @@ def create_residual_diagnostics_plots(
         model.fit(dataset)
         predicted = model.predict(dataset)
 
-        run["residual_diagnostics_plot"] = create_residual_diagnostics_plots(predicted, dataset.y)
+        run["residual_diagnostics_plot"] = npt_utils.create_residual_diagnostics_plots(predicted, dataset.y)
     """
 
     if log_interactive:
