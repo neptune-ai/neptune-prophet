@@ -1,3 +1,8 @@
+## neptune-prophet 1.0.0
+
+### Changes
+- Removed `neptune` and `neptune-client` from base requirements  ([#30](https://github.com/neptune-ai/neptune-prophet/pull/30))
+
 ## neptune-prophet 0.5.0
 - Updated integration for compatibility with `neptune` v1 ([#26](https://github.com/neptune-ai/neptune-prophet/pull/26))
 
