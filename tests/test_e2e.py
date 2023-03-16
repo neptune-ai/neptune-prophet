@@ -3,7 +3,11 @@ import tempfile
 from pathlib import Path
 
 import pytest
-from neptune import init_run
+
+try:
+    from neptune import init_run
+except ImportError:
+    from neptune.new import init_run
 
 from neptune_prophet.impl import (
     create_forecast_plots,
