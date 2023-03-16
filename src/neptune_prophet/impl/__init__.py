@@ -43,7 +43,6 @@ from neptune.types import (
     File,
     FloatSeries,
 )
-from neptune.utils import stringify_unsupported
 from prophet import Prophet
 from prophet.plot import (
     add_changepoints_to_plot,
@@ -54,6 +53,11 @@ from prophet.serialize import model_to_json
 from scipy import stats
 
 from neptune_prophet.impl.version import __version__
+
+try:
+    from neptune.utils import stringify_unsupported
+except ImportError:
+    from neptune.new.utils import stringify_unsupported
 
 
 def create_summary(

@@ -16,7 +16,6 @@ importlib-metadata = { version = "*", python = "<3.8" }
 
 # Base requirements
 matplotlib = "<=3.4.3"
-neptune = ">=1.0.0"
 numpy = "*"
 pandas = "*"
 prophet = ">=1.0"
@@ -28,6 +27,7 @@ pre-commit = { version = "*", optional = true }
 pytest = { version = ">=5.0", optional = true }
 pytest-cov = { version = "2.10.1", optional = true }
 plotly = { version = "*", optional = true }
+neptune = { version = ">=1.0.0", optional = true }
 
 [tool.poetry.extras]
 dev = [
@@ -35,6 +35,7 @@ dev = [
     "pytest",
     "pytest-cov",
     "plotly",
+    "neptune",
 ]
 
 [tool.poetry]
