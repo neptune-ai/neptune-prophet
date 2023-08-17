@@ -1,12 +1,13 @@
 # Neptune + Prophet integration
 
-Experiment tracking, model registry, data versioning, and live model monitoring for Prophet trained models.
+Experiment tracking for Prophet-trained models.
 
 ## What will you get with this integration?
 
-* Log, display, organize, and compare ML experiments in a single place
-* Version, store, manage, and query trained models and model-building metadata
-* Record and monitor model training, evaluation, or production runs live
+* Log, organize, visualize, and compare ML experiments in a single place
+* Monitor model training live
+* Version and query production-ready models and associated metadata (e.g., datasets)
+* Collaborate with the team and across the organization
 
 ## What will be logged to Neptune?
 
@@ -15,14 +16,13 @@ Experiment tracking, model registry, data versioning, and live model monitoring 
 * residual diagnostic charts,
 * [other metadata](https://docs.neptune.ai/logging/what_you_can_log)
 
-![image](https://user-images.githubusercontent.com/97611089/188817349-973a49b2-e0d3-44dd-b51d-7dec670158f9.png)
-*Example dashboard in the Neptune app showing diagnostic charts*
+![image](https://docs.neptune.ai/img/app/integrations/prophet.png)
 
 ## Resources
 
 * [Documentation](https://docs.neptune.ai/integrations/prophet)
 * [Code example on GitHub](https://github.com/neptune-ai/examples/tree/main/integrations-and-supported-tools/prophet/scripts)
-* [Example project in the Neptune app](https://app.neptune.ai/o/common/org/fbprophet-integration/experiments?split=tbl&dash=charts&viewId=standard-view)
+* [Example project in the Neptune app](https://app.neptune.ai/o/common/org/fbprophet-integration/runs/details?viewId=standard-view&detailsTab=dashboard&dashboardId=Diagnostic-charts-5855c208-c4b8-4171-b065-d0e8802b1b60&shortId=FBPROP-3211&type=run)
 * [Run example in Google Colab](https://colab.research.google.com/github/neptune-ai/examples/blob/main/integrations-and-supported-tools/prophet/notebooks/Neptune_prophet.ipynb)
 
 ## Example
