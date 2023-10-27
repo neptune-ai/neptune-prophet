@@ -1,3 +1,8 @@
+## neptune-prophet 1.0.1
+
+### Changes
+- Bumped `plotly` and unpinned `matplotlib` ([#33](https://github.com/neptune-ai/neptune-prophet/pull/33))
+
 ## neptune-prophet 1.0.0
 
 ### Changes
