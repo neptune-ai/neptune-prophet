@@ -1,3 +1,8 @@
+## neptune-prophet 1.0.2
+
+### Changes
+- Constrained `numpy` to `<2.0.0` ([#35](https://github.com/neptune-ai/neptune-prophet/pull/35))
+
 ## neptune-prophet 1.0.1
 
 ### Changes
