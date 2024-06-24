@@ -16,7 +16,7 @@ importlib-metadata = { version = "*", python = "<3.8" }
 
 # Base requirements
 matplotlib = "*"
-numpy = "*"
+numpy = "<2.0.0"
 pandas = "<2.0.0"
 prophet = ">=1.0"
 scipy = "*"
